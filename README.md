@@ -10,7 +10,7 @@ File `.csv` estratto dal **Bollettino di previsione del rischio incendi del 25 s
 notebook/03-crawler...
 ```
 
-Il dataset contiene i dati relativi al rischio estratti dal bollettino.
+Il dataset contiene i dati relativi al rischio estratti dal bollettino giornaliero.
 
 ## `firms_puglia.csv`
 
@@ -20,7 +20,7 @@ File `.csv contenente i **focolai attivi rilevati in Puglia**, scaricato il **25
 notebook/05-...
 ```
 
-Il dataset viene ottenuto utilizzando le **API NASA FIRMS**.
+Il dataset viene ottenuto utilizzando l' **API NASA FIRMS**.
 
 ### Aggiornamento dei focolai attivi
 
@@ -44,4 +44,4 @@ Lo script interroga periodicamente le API NASA FIRMS e aggiorna i dati utilizzat
 
 Dataset **storico** nel quale, per ogni comune, sono stati associati i relativi **codici delle zone AIB**.
 
-Il dataset è attualmente **non utilizzato da `index.html`**, ma viene mantenuto nel progetto come riferimento storico.
+Il dataset è attualmente **non utilizzato da `index.html`**, verrà utilizzato successivamente.
