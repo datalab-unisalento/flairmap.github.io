@@ -6,7 +6,7 @@ const CONFIG = {
   // In produzione: l'URL del TUO proxy (vedi README), mai Langflow diretto con la chiave nel browser
   LANGFLOW_URL: "http://localhost:7860",
   FLOW_ID: "4cc9bdc6-a477-4283-9452-7b729a868017",   // Langflow → flow → Share → API access
-  API_KEY: "sk-NUgIw6ynFx_eLf2RS-v29i53wHktI8XjhE7l4Ke_xxM",                         // SOLO per sviluppo locale; lasciare vuoto se usi il proxy
+  API_KEY: "",                         // SOLO per sviluppo locale; lasciare vuoto se usi il proxy
 };
 
 const form = document.getElementById("chat-form");
