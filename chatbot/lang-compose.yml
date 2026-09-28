@@ -1,0 +1,60 @@
+services:
+  langflow:
+    build: .
+    pull_policy: never
+    ports:
+      - "7860:7860"
+    depends_on:
+      - postgres
+    user: root
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    env_file:
+      - .env
+    environment:
+      - LANGFLOW_SSRF_ALLOWED_HOSTS=host.docker.internal
+      - LANGFLOW_SUPERUSER_PASSWORD=tua_password_sicura
+      - LANGFLOW_SUPERUSER_USERNAME=langflow
+      - LANGFLOW_USERNAME=admin
+      - LANGFLOW_PASSWORD=MyS3cureP@ss!
+#      - LANGFLOW_AUTHENTICATE=false
+      - LANGFLOW_DATABASE_URL=${LANGFLOW_DATABASE_URL}
+      - LANGFLOW_WORKER_TIMEOUT=${LANGFLOW_WORKER_TIMEOUT}
+      - PYTHONWARNINGS=ignore
+      - LANGFLOW_LANGUAGE=en
+      - LANGFLOW_FRONTEND_LANGUAGE=en
+      - LANGFLOW_CONFIG_DIR=${LANGFLOW_CONFIG_DIR}
+      # --- LangSmith ---
+      - LANGSMITH_TRACING=${LANGSMITH_TRACING}
+      - LANGSMITH_ENDPOINT=${LANGSMITH_ENDPOINT}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY}
+      - LANGSMITH_PROJECT=${LANGSMITH_PROJECT}
+    volumes:
+      - langflow-data:/app/langflow
+    networks:
+      - lw-net
+      - mcp-network
+    
+
+  postgres:
+    image: postgres:17
+    shm_size: 208mb
+    environment:
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+        - langflow-postgres:/var/lib/postgresql/data
+    networks:
+      - lw-net
+
+volumes:
+  langflow-postgres:
+  langflow-data:
+
+networks:
+  lw-net:
+    external: true
+  mcp-network:
+    external: true
+  
