@@ -1,15 +1,16 @@
 import json
+import logging
 from datetime import datetime, timedelta
 from typing import Any
 
 import duckdb
-
+logger = logging.getLogger(__name__)
 
 class HistoricalCache:
     """L3: shared, queryable cache backed by DuckDB. Also serves historical queries."""
     #TODO le table sql ancora non sono ben definite, ma le ho messe per prova
 
-    def __init__(self, db_path: str = './data/cache/historical.duckdb'):
+    def __init__(self, db_path: str = './data/duck/historical.duckdb'):
         self._conn = duckdb.connect(db_path)
         self._conn.execute('''
                            CREATE TABLE IF NOT EXISTS cache

@@ -1,13 +1,23 @@
 import logging
 import os
+from contextlib import asynccontextmanager
+from dataclasses import dataclass
+from typing import AsyncIterator
 
 from dotenv import load_dotenv
-from fastmcp import FastMCP
+
+from mcp.server import MCPServer
 
 from mcp_server.api.client import ApiClient
 from mcp_server.cache import CacheManager, MemoryCache, DiskCache, HistoricalCache
 from mcp_server.utils.logging import setup_logging
 
+
+
+@dataclass
+class AppContext:
+    api_client: ApiClient
+    cache_manager: CacheManager
 # Load environment variables
 load_dotenv()
 
@@ -33,37 +43,24 @@ setup_logging(LOG_LEVEL, log_dir=LOG_DIR)
 logger.info(f"Logger ready on dir:{LOG_DIR}")
 
 #Init della cache
-manager = CacheManager(
-    l1=MemoryCache(),
-    l2=DiskCache(cache_dir='./data/cache/disk'),
-    l3=HistoricalCache(db_path='./data/cache/historical.duckdb'),
-)
+@asynccontextmanager
+async def app_lifespan(server: MCPServer) -> AsyncIterator[AppContext]:
+    cache_manager = CacheManager(
+        l1=MemoryCache(),
+        l2=DiskCache(cache_dir='./data/cache/disk'),
+        l3=HistoricalCache(db_path='./data/cache/historical.duckdb'),
+    )
+    api_client = ApiClient(cache_manager=cache_manager)
 
-#Init api
-api_client = ApiClient(
-    cache_manager=manager,
-    base_url=API_BASE_URL,
-    timeout=API_TIMEOUT,
-    available_constraint_timeout=AVAILABLECONSTRAINT_TIMEOUT,
-    max_retries=API_MAX_RETRIES,
-    max_concurrent_requests=MAX_CONCURRENT_REQUESTS
-
-)
-
-
+    try:
+        yield AppContext(api_client=api_client, cache_manager=cache_manager)
+    finally:
+        logger.info("Shutdown connection")
+        #await api_client.aclose()  # chiude il client HTTP allo shutdown
 
 # Istanza globale — la importano tutti i tool
-mcp = FastMCP(
-    'energy-trader-mcp-server',
-    host=os.getenv("MCP_HOST", "0.0.0.0"),
-    port=int(os.getenv("MCP_PORT", "8000")),
+mcp = MCPServer(
+    "flair-mcp-server",
+    lifespan=app_lifespan
 )
 
-
-
-"""
-AC
- ,--.  
-| oo | 
-| ~~ |
-"""

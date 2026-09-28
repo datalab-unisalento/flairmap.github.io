@@ -57,3 +57,20 @@ class DiskCache:
         else:
             logger.debug(f'DiskCache MISS: {key}')
         return value
+
+    def set(self, key: str, value: Any, ttl: int | None = None) -> None:
+        """Salva un valore in cache.
+
+        Args:
+            key: chiave di cache
+            value: valore da salvare (str, dict, list, ...)
+            ttl: secondi di validità; None = nessuna scadenza
+        """
+        self._cache.set(key, value, expire=ttl)
+        logger.debug(f'DiskCache SET: {key} (ttl={ttl})')
+
+    def delete(self, key: str) -> bool:
+        return self._cache.delete(key)
+
+    def close(self) -> None:
+        self._cache.close()

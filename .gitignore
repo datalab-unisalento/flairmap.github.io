@@ -3,3 +3,4 @@ chatbot/.env
 /flair_mcp/mcp_server/cache/__pycache__
 /flair_mcp/mcp_server/api/__pycache__
 /flair_mcp/.env
+.idea

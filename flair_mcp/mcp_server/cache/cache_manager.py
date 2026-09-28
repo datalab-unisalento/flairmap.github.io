@@ -1,14 +1,18 @@
 import asyncio
 import hashlib
 import json
+import logging
 from enum import Enum
 from dataclasses import dataclass, field
 from typing import Any
 
-from mcp_server.cache import MemoryCache, DiskCache, HistoricalCache
+from mcp_server.cache.memory_cache import MemoryCache
+from mcp_server.cache.disk_cache import DiskCache
+from mcp_server.cache.historical_cache import HistoricalCache
 
 from enum import Enum
 
+logger = logging.getLogger(__name__)
 
 class DataType(Enum):
     """Categorie di dati cachati, ognuna con un proprio ciclo di vita.
@@ -32,7 +36,9 @@ class DataType(Enum):
     # Layer che cambiano raramente.
     # Non dipendono dal meteo: restano validi per settimane/mesi,
     # finché non si aggiorna il dataset sorgente.
-
+    
+    BOLLETTINO_INCENDI = "bollettino_incendi"
+    BOLLETTINO_PUGLIA = "bollettino_puglia"
 
 TTL_BY_TYPE: dict[DataType, int] = {
     # 3 ore: un compromesso ragionevole se il bollettino meteo aggiorna
@@ -47,6 +53,9 @@ TTL_BY_TYPE: dict[DataType, int] = {
     # Un TTL lungo evita di rileggere/ricalcolare dati che nella pratica
     # non cambiano mai durante la vita del prototipo.
     DataType.STATICO: 30 * 24 * 3600,
+    # 1 giorno: i bollettini vengono emessi quotidianamente.
+    DataType.BOLLETTINO_INCENDI: 24 * 3600,
+    DataType.BOLLETTINO_PUGLIA: 24 * 3600,
 }
 
 

@@ -7,9 +7,13 @@ from typing import Any
 import httpx
 import logging
 
-from mcp.server.fastmcp import Context
+from mcp.server import MCPServer
+from mcp.server.context import Context
 
-from mcp_server.cache.manager import DataType, CacheManager
+from mcp_server.cache import CacheManager
+from mcp_server.cache.cache_manager import DataType
+from mcp_server.utils.crawler_bollettino import CrawlerBollettino
+from mcp_server.utils.load_bollettino_pdf import LoadBollettinoPdf
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +24,7 @@ class ApiClient:
     def __init__(
         self,
         cache_manager: CacheManager,
-        base_url: str,
+        base_url: str = '',
         timeout: float = 120.0,
         available_constraint_timeout: float = 300.0,
         max_retries: int = 3,
@@ -152,3 +156,45 @@ class ApiClient:
         except Exception as e:
             logger.error(f"API request failed: {type(e).__name__}: {e}", exc_info=True)
             return {"Error": str(e)}
+
+
+    async def crawl_bollettini_cached(
+            self,
+            data_type: DataType,
+            cache_key: str,
+            **cache_params,
+    ):
+        logger.info(f"requesting bolletino - data_type: {data_type.value} - cache_key: {cache_key}")
+        start_time = time.time()
+        # Try to get from cache
+        cached_data = await self.cache_manager.get(
+            data_type=data_type, identifier=cache_key, **cache_params
+        )
+
+        if cached_data is not None:
+            logger.info(f"Cache hit for {data_type.value}:{cache_key}")
+            return cached_data
+
+        try:
+            logger.debug(f"making request")
+            load_bollettino = LoadBollettinoPdf(data_type.value)
+            response = await load_bollettino.get_bollettino()
+
+            logger.debug(f"Bollettino response: {response}")
+
+            # Track API call latency
+            api_latency = (time.time() - start_time) * 1000
+            self.cache_manager.record_api_call(api_latency)
+            logger.info(f"API call latency: {api_latency:.2f}ms")
+
+            # Cache the response
+            await self.cache_manager.set(
+                data_type=data_type, identifier=cache_key, data=response, **cache_params
+            )
+            logger.debug(f"API call for {data_type.value}:{cache_key} ({api_latency:.2f}ms)")
+            return response
+
+        except Exception as e:
+            logger.error(f"API request failed: {type(e).__name__}: {e}", exc_info=True)
+            return {"Error": str(e)}
+
