@@ -172,8 +172,10 @@ class ApiClient:
         )
 
         if cached_data is not None:
-            logger.info(f"Cache hit for {data_type.value}:{cache_key}")
-            return cached_data
+            if self._is_valid(cached_data):
+                logger.info("Cache hit for %s:%s (%d caratteri)", data_type.value, cache_key, len(cached_data))
+                return cached_data
+            logger.warning("Cache hit ignorato: formato non valido (%s)", type(cached_data).__name__)
 
         try:
             logger.debug(f"making request")
@@ -198,3 +200,6 @@ class ApiClient:
             logger.error(f"API request failed: {type(e).__name__}: {e}", exc_info=True)
             return {"Error": str(e)}
 
+
+    def _is_valid(self,data) -> bool:
+        return isinstance(data, str) and bool(data.strip())

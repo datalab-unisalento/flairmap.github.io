@@ -3,6 +3,7 @@ import os
 
 from mcp_server.server import mcp
 import mcp_server.tool
+import mcp_server.prompt
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

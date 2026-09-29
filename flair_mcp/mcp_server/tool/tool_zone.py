@@ -1,5 +1,6 @@
 import logging
 import os
+import unicodedata
 from pathlib import Path
 
 from mcp_server.api.models import Zona, IncendioMeteo
@@ -26,7 +27,7 @@ COLONNE_INCENDI_METEO = {
     "provincia": "provincia",
     "zona": "zona",
     "zona_certezza": "zona_certezza",
-    "località": "località",
+    "localita": "localita",
     "lat": "lat",
     "lon": "lon",
     "tipologia": "tipologia",
@@ -75,10 +76,20 @@ CSV_INCENDI = Path(
 )
 
 def _norm(s: str) -> str:
+    s = s or ""
+    # ripara il mojibake (es. "NardÃ²" -> "Nardò"), se presente
+    try:
+        s = s.encode("cp1252").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        pass
+    s = unicodedata.normalize("NFD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = s.replace("'", "").replace("’", "")
     return s.strip().casefold()
 
 def _filter_zona(CSV_PATH,COLONNE,luogo:str):
     q = _norm(luogo)
+    logger.info(f"normalized: {q}")
     if not q:
         raise ValueError("Parametro 'luogo' vuoto")
 
@@ -94,27 +105,61 @@ def _filter_zona(CSV_PATH,COLONNE,luogo:str):
 
 @mcp.tool()
 def find_zona(luogo: str) -> list[Zona]:
-    """Cerca le zone per comune, provincia, sigla o codice ISTAT.
+    """Search for zones matching a location string.
 
-    Restituisce l'elenco delle Zona corrispondenti (vuoto se nessuna trovata).
+    Parameters
+    ----------
+    luogo:
+        A free‑form location identifier – it can be a municipality name,
+        province name, vehicle registration *sigla*, ISTAT code or the
+        ``settore_aib`` identifier. The search is case‑insensitive and
+        whitespace trimmed.
+
+    Returns
+    -------
+    list[Zona]
+        A list of :class:`Zona` objects that match the query. The list is
+        empty only if no matches are found; in that case a
+        :class:`ValueError` is raised by the underlying filter.
     """
-    return _filter_zona(CSV_PATH_MAPPING,COLONNE_MAPPING_ZONA,luogo)
+    return _filter_zona(CSV_PATH_MAPPING, COLONNE_MAPPING_ZONA, luogo)
 
 
 @mcp.tool()
-def incendi_meteo_dir(settore_aib:str)-> list[IncendioMeteo]:
+def incendi_meteo_dir(settore_aib: str) -> list[IncendioMeteo]:
+    """Retrieve fire‑weather observations for a given *settore AIB*.
+
+    The function loads the CSV containing fire‑weather data, filters the
+    rows whose ``zona`` field matches the normalized ``settore_aib``
+    argument and returns the matching :class:`IncendioMeteo` objects.
+
+    Parameters
+    ----------
+    settore_aib:
+        The identifier of the fire‑management sector (e.g. ``"A"`` or
+        ``"B"``). The input is normalized with :func:`_norm` before
+        comparison.
+
+    Returns
+    -------
+    list[IncendioMeteo]
+        A list of matching fire‑weather records. If no records are found,
+        a :class:`ValueError` is raised.
+    """
     incendi_meteo = get_incendi_meteo(
         CSV_INCENDI,
         COLONNE_INCENDI_METEO,
         settore_aib=settore_aib,
         delimiter=",",
     )
-    norm = _norm(settore_aib)
+    #norm = _norm(settore_aib)
+
     incendi = [
         incendio for incendio in incendi_meteo
-        if norm in (_norm(incendio.zona))
+        if settore_aib in incendio.zona
     ]
-    logger.info(f'zona trovata')
+    logger.info(f"zona trovata: {incendi}")
+
     if not incendi:
         raise ValueError(f"Nessuna zona trovata per '{settore_aib}'")
     return incendi

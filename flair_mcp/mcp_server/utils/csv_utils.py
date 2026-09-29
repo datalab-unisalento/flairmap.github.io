@@ -28,6 +28,7 @@ def leggi_zone(CSV_PATH,COLONNE,delimiter: str = ",", encoding: str = "utf-8-sig
     return zone
 
 
+
 def get_incendi_meteo(
     csv_path,
     colonne,

@@ -46,7 +46,7 @@ class IncendioMeteo(BaseModel):
     provincia: str
     zona: str
     zona_certezza: Optional[str] = Field(None, description="Indice di certezza della zona")
-    località: str = Field(..., alias="località")
+    localita: Optional[str] = Field(..., alias="localita")
     lat: float = Field(..., ge=-90, le=90)
     lon: float = Field(..., ge=-180, le=180)
 
