@@ -98,7 +98,7 @@ async def get_bollettino_incendi(
 
     try:
         data_type = DataType(bollettino_type)  # "bollettino_incendi" -> DataType.BOLLETTINO_INCENDI
-        logg
+
     except ValueError:
         return {"Error": f"Tipo di bollettino non valido: {bollettino_type}"}
 
