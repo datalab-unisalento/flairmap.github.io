@@ -1,16 +1,13 @@
 import csv
+from datetime import datetime, date
 import logging
-import os
 from pathlib import Path
 
-from mcp_server.api.models import Zona, IncendioMeteo
+from mcp_server.api.models import Zona, IncendioMeteo, IncendioFirms
+
 #Classe che estrae dati dai csv, al momento prendiamo dai dataset, un domani possiamo prendere da api
-
-
-
-from pathlib import Path
-
 # se questo codice sta in mcp_server/qualcosa/file.py, regola i parents
+
 logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parents[1]   # /app/mcp_server
 
@@ -51,4 +48,43 @@ def get_incendi_meteo(
     return risultati
 
 
+def get_indici_firms(
+    csv_path,
+    colonne: dict[str, str],
+    comune: str,
+    giorno: str,  # formato "YYYY-MM-DD"
+    delimiter: str = ",",
+    encoding: str = "utf-8-sig",
+) -> list[IncendioFirms]:
+    risultati = []
+    giorno_richiesto: date = date.fromisoformat(giorno)
+    comune_norm = comune.strip().casefold()
 
+    with open(csv_path, newline="", encoding=encoding) as f:
+        reader = csv.DictReader(f, delimiter=delimiter)
+        reader.fieldnames = [h.strip() for h in (reader.fieldnames or [])]
+
+        for riga in reader:
+            if (riga.get("comune") or "").strip().casefold() != comune_norm:
+                continue
+
+            dt = _parse_dt(riga.get("data_ora_italia"))
+            if dt is None or dt.date() != giorno_richiesto:
+                continue
+
+            dati = {
+                campo: (riga.get(col) or "").strip() or None
+                for campo, col in colonne.items()
+            }
+            risultati.append(IncendioFirms.model_validate(dati))
+
+    return risultati
+
+
+def _parse_dt(valore: str | None) -> datetime | None:
+    if not valore:
+        return None
+    try:
+        return datetime.fromisoformat(valore.strip())
+    except ValueError:
+        return None

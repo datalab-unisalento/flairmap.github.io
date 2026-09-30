@@ -106,7 +106,6 @@ class ApiClient:
         url: str,
         data_type: DataType,
         cache_key: str,
-        ctx: Context | None, #TODO questa la tenevo per la key, ma forse si può levare
         timeout_override: float | None = None,
         **cache_params,
     ) -> dict[str, str] | None | Any:
@@ -133,13 +132,13 @@ class ApiClient:
 
         # Cache miss - fetch from API
         try:
-            logger.debug(f"making request to {url}")
+            logger.info(f"making request to {url}")
 
             response = await self._request_with_retry(
                 url, timeout=timeout_override or self._timeout
             )
             data = response.json()
-            logger.debug(f"API response: {data}")
+            logger.info(f"API response: {data}")
 
             # Track API call latency
             api_latency = (time.time() - start_time) * 1000
@@ -150,7 +149,7 @@ class ApiClient:
             await self.cache_manager.set(
                 data_type=data_type, identifier=cache_key, data=data, **cache_params
             )
-            logger.debug(f"API call for {data_type.value}:{cache_key} ({api_latency:.2f}ms)")
+            logger.info(f"API call for {data_type.value}:{cache_key} ({api_latency:.2f}ms)")
             return data
 
         except Exception as e:

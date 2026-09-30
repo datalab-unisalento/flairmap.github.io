@@ -1,10 +1,10 @@
 # models.py
-
-from pydantic import BaseModel
 from datetime import date
 from typing import Literal, Optional
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 Livello = Literal["BASSO", "MEDIO", "MODERATO", "ELEVATO", "ESTREMO"]
 
@@ -97,3 +97,41 @@ class IncendioMeteo(BaseModel):
     meteo_quota_m: Optional[int] = None
     vento_ore12_nome: Optional[str] = None
     fuoco_spinto_verso: Optional[str] = None
+
+
+ROMA = ZoneInfo("Europe/Rome")
+
+class IncendioFirms(BaseModel):
+    # ----------------------------------------------------------------------
+    # Timestamp (stringa, ma convertita in datetime se possibile)
+    # ----------------------------------------------------------------------
+    data_ora_utc: datetime = Field(..., description="Timestamp UTC (ISO con Z)")
+    data_ora_italia: datetime = Field(..., description="Timestamp locale Italia (YYYY‑MM‑DD HH:MM)")
+    scaricato_il_utc: datetime = Field(..., description="Data di scaricamento in UTC (ISO con Z)")
+
+    # ----------------------------------------------------------------------
+    # Localizzazione
+    # ----------------------------------------------------------------------
+    comune: str
+    provincia: str
+    lat: float = Field(..., ge=-90, le=90, description="Latitudine decimale")
+    lon: float = Field(..., ge=-180, le=180, description="Longitudine decimale")
+
+    # ----------------------------------------------------------------------
+    # Dati satellite / incendio
+    # ----------------------------------------------------------------------
+    satellite: str
+    affidabilita: str = Field(..., description="Indice di affidabilità (es. 'nominale')")
+    frp_mw: float = Field(..., ge=0, description="Fire Radiative Power in MW")
+    passaggio: str = Field(..., description="Tipo di passaggio (es. 'diurno', 'notturno', …)")
+    area_industriale: Optional[str] = Field(
+        None, description="Indicatore area industriale (può essere vuoto)"
+    )
+    focolaio_id: Optional[str] = Field(
+        None, description="Identificatore focolaio (può essere vuoto)"
+    )
+
+    @field_validator("data_ora_italia")
+    @classmethod
+    def _italia_aware(cls, v: datetime) -> datetime:
+        return v if v.tzinfo else v.replace(tzinfo=ROMA)

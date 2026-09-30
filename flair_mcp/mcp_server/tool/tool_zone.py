@@ -1,11 +1,12 @@
 import logging
 import os
 import unicodedata
+from datetime import date
 from pathlib import Path
 
-from mcp_server.api.models import Zona, IncendioMeteo
+from mcp_server.api.models import Zona, IncendioMeteo, IncendioFirms
 from mcp_server.server import mcp
-from mcp_server.utils.csv_utils import leggi_zone, get_incendi_meteo
+from mcp_server.utils.csv_utils import leggi_zone, get_incendi_meteo, get_indici_firms
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,21 @@ COLONNE_INCENDI_METEO = {
     "fuoco_spinto_verso": "fuoco_spinto_verso",
 }
 
+COLONNE_FIRMS = {
+    "data_ora_utc": "data_ora_utc",
+    "data_ora_italia": "data_ora_italia",
+    "comune": "comune",
+    "provincia": "provincia",
+    "lat": "lat",
+    "lon": "lon",
+    "satellite": "satellite",
+    "affidabilita": "affidabilita",
+    "frp_mw": "frp_mw",
+    "passaggio": "passaggio",
+    "area_industriale": "area_industriale",
+    "focolaio_id": "focolaio_id",
+    "scaricato_il_utc": "scaricato_il_utc",
+}
 BASE_DIR = Path(__file__).resolve().parents[1]   # /app/mcp_server
 
 CSV_PATH_MAPPING = Path(
@@ -71,8 +87,12 @@ CSV_PATH_MAPPING = Path(
     or BASE_DIR / "resources" / "data" / "tutti_comuni_puglia_settori_aib.csv"
 )
 CSV_INCENDI = Path(
-    os.getenv("CSV_PATH")
+    os.getenv("CSV_INCENDI")
     or BASE_DIR / "resources" / "data" / "incendi_meteo_dir_zone.csv"
+)
+CSV_FIRMS = Path(
+os.getenv("CSV_FIRMS")
+    or BASE_DIR / "resources" / "data" / "firms_puglia.csv"
 )
 
 def _norm(s: str) -> str:
@@ -165,7 +185,53 @@ def incendi_meteo_dir(settore_aib: str) -> list[IncendioMeteo]:
     return incendi
 
 
-        
+@mcp.tool()
+async def get_indice_pericolo(comune: str, giorno: str) -> list[IncendioFirms]:
+    """Restituisce l'indice di pericolo incendio per un comune in un dato giorno.
+
+    Args:
+        comune: Nome del comune pugliese (es. "peschici")
+        giorno: Data in formato YYYY-MM-DD
+    """
+    '''
+     app: AppContext = ctx.request_context.lifespan_context
+    client = app.api_client
+
+    url = f'{client._base_url}/indice-pericolo/{comune}?giorno={giorno}'  # vedi nota sotto
+
+    result = await client.make_cached_request(
+        url=url,
+        data_type=DataType.INDICE_PERICOLO,
+        cache_key=comune,
+        ctx=ctx,
+        giorno=giorno,  # finisce in **cache_params, quindi nella chiave
+    )
+
+    if isinstance(result, dict) and 'Error' in result:
+        # Errore esplicito verso l'LLM invece di un dato che sembra valido
+        raise ValueError(f"Impossibile recuperare l'indice per {comune}: {result['Error']}")
+
+    '''
+    indice_pericolo = get_indici_firms(
+        CSV_FIRMS,
+        COLONNE_FIRMS,
+        comune,
+        giorno
+        )
+    giorno_richiesto = date.fromisoformat(giorno)  # "2026-09-25"
+    comune_norm = comune.strip().casefold()
+
+    incendi = [
+        incendio for incendio in indice_pericolo
+        if incendio.comune.strip().casefold() == comune_norm
+           and incendio.data_ora_italia.date() == giorno_richiesto
+    ]
+
+    logger.info(f"zona trovata: {incendi}")
+
+    if not incendi:
+        raise ValueError(f"Nessuna zona trovata per '{comune}'")
+    return incendi
             
             
 
