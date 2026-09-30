@@ -1,0 +1,258 @@
+codice_istat,comune,provincia,sigla,settore_aib
+072001,Acquaviva delle Fonti,Bari,BA,BA_01
+072002,Adelfia,Bari,BA,BA_01
+072003,Alberobello,Bari,BA,BA_01
+072004,Altamura,Bari,BA,BA_02
+072006,Bari,Bari,BA,BA_01
+072008,Binetto,Bari,BA,BA_02
+072010,Bitetto,Bari,BA,BA_01
+072011,Bitonto,Bari,BA,BA_02
+072012,Bitritto,Bari,BA,BA_01
+072014,Capurso,Bari,BA,BA_01
+072015,Casamassima,Bari,BA,BA_01
+072016,Cassano delle Murge,Bari,BA,BA_02
+072017,Castellana Grotte,Bari,BA,BA_01
+072018,Cellamare,Bari,BA,BA_01
+072019,Conversano,Bari,BA,BA_01
+072020,Corato,Bari,BA,BA_02
+072021,Gioia del Colle,Bari,BA,BA_01
+072022,Giovinazzo,Bari,BA,BA_02
+072023,Gravina in Puglia,Bari,BA,BA_02
+072024,Grumo Appula,Bari,BA,BA_02
+072025,Locorotondo,Bari,BA,BA_01
+072027,Modugno,Bari,BA,BA_01
+072028,Mola di Bari,Bari,BA,BA_01
+072029,Molfetta,Bari,BA,BA_02
+072030,Monopoli,Bari,BA,BA_01
+072031,Noci,Bari,BA,BA_01
+072032,Noicattaro,Bari,BA,BA_01
+072033,Palo del Colle,Bari,BA,BA_02
+072034,Poggiorsini,Bari,BA,BA_02
+072035,Polignano a Mare,Bari,BA,BA_01
+072036,Putignano,Bari,BA,BA_01
+072037,Rutigliano,Bari,BA,BA_01
+072038,Ruvo di Puglia,Bari,BA,BA_02
+072039,Sammichele di Bari,Bari,BA,BA_01
+072040,Sannicandro di Bari,Bari,BA,BA_01
+072041,Santeramo in Colle,Bari,BA,BA_02
+072043,Terlizzi,Bari,BA,BA_02
+072044,Toritto,Bari,BA,BA_02
+072046,Triggiano,Bari,BA,BA_01
+072047,Turi,Bari,BA,BA_01
+072048,Valenzano,Bari,BA,BA_01
+110001,Andria,Barletta-Andria-Trani,BT,BT_01
+110002,Barletta,Barletta-Andria-Trani,BT,BT_01
+110003,Bisceglie,Barletta-Andria-Trani,BT,BT_01
+110004,Canosa di Puglia,Barletta-Andria-Trani,BT,BT_01
+110005,Margherita di Savoia,Barletta-Andria-Trani,BT,BT_01
+110006,Minervino Murge,Barletta-Andria-Trani,BT,BT_01
+110007,San Ferdinando di Puglia,Barletta-Andria-Trani,BT,BT_01
+110008,Spinazzola,Barletta-Andria-Trani,BT,BT_01
+110009,Trani,Barletta-Andria-Trani,BT,BT_01
+110010,Trinitapoli,Barletta-Andria-Trani,BT,BT_01
+074001,Brindisi,Brindisi,BR,BR_01
+074002,Carovigno,Brindisi,BR,BR_01
+074003,Ceglie Messapica,Brindisi,BR,BR_01
+074004,Cellino San Marco,Brindisi,BR,BR_01
+074005,Cisternino,Brindisi,BR,BR_01
+074006,Erchie,Brindisi,BR,BR_01
+074007,Fasano,Brindisi,BR,BR_01
+074008,Francavilla Fontana,Brindisi,BR,BR_01
+074009,Latiano,Brindisi,BR,BR_01
+074010,Mesagne,Brindisi,BR,BR_01
+074011,Oria,Brindisi,BR,BR_01
+074012,Ostuni,Brindisi,BR,BR_01
+074013,San Donaci,Brindisi,BR,BR_01
+074014,San Michele Salentino,Brindisi,BR,BR_01
+074015,San Pancrazio Salentino,Brindisi,BR,BR_01
+074016,San Pietro Vernotico,Brindisi,BR,BR_01
+074017,San Vito dei Normanni,Brindisi,BR,BR_01
+074018,Torchiarolo,Brindisi,BR,BR_01
+074019,Torre Santa Susanna,Brindisi,BR,BR_01
+074020,Villa Castelli,Brindisi,BR,BR_01
+071001,Accadia,Foggia,FG,FG_04
+071002,Alberona,Foggia,FG,FG_04
+071003,Anzano di Puglia,Foggia,FG,FG_04
+071004,Apricena,Foggia,FG,FG_01
+071005,Ascoli Satriano,Foggia,FG,FG_04
+071006,Biccari,Foggia,FG,FG_04
+071007,Bovino,Foggia,FG,FG_04
+071008,Cagnano Varano,Foggia,FG,FG_01
+071009,Candela,Foggia,FG,FG_04
+071010,Carapelle,Foggia,FG,FG_02
+071011,Carlantino,Foggia,FG,FG_04
+071012,Carpino,Foggia,FG,FG_01
+071013,Casalnuovo Monterotaro,Foggia,FG,FG_04
+071014,Casalvecchio di Puglia,Foggia,FG,FG_04
+071016,Castelluccio Valmaggiore,Foggia,FG,FG_04
+071015,Castelluccio dei Sauri,Foggia,FG,FG_04
+071017,Castelnuovo della Daunia,Foggia,FG,FG_04
+071018,Celenza Valfortore,Foggia,FG,FG_04
+071019,Celle di San Vito,Foggia,FG,FG_04
+071020,Cerignola,Foggia,FG,FG_02
+071021,Chieuti,Foggia,FG,FG_03
+071022,Deliceto,Foggia,FG,FG_04
+071023,Faeto,Foggia,FG,FG_04
+071024,Foggia,Foggia,FG,FG_02
+071025,Ischitella,Foggia,FG,FG_01
+071026,Isole Tremiti,Foggia,FG,FG_01
+071027,Lesina,Foggia,FG,FG_01
+071028,Lucera,Foggia,FG,FG_04
+071029,Manfredonia,Foggia,FG,FG_01
+071031,Mattinata,Foggia,FG,FG_01
+071033,Monte Sant'Angelo,Foggia,FG,FG_01
+071032,Monteleone di Puglia,Foggia,FG,FG_04
+071034,Motta Montecorvino,Foggia,FG,FG_04
+071063,Ordona,Foggia,FG,FG_02
+071035,Orsara di Puglia,Foggia,FG,FG_04
+071036,Orta Nova,Foggia,FG,FG_02
+071037,Panni,Foggia,FG,FG_04
+071038,Peschici,Foggia,FG,FG_01
+071039,Pietramontecorvino,Foggia,FG,FG_04
+071040,Poggio Imperiale,Foggia,FG,FG_01
+071041,Rignano Garganico,Foggia,FG,FG_01
+071042,Rocchetta Sant'Antonio,Foggia,FG,FG_04
+071043,Rodi Garganico,Foggia,FG,FG_01
+071044,Roseto Valfortore,Foggia,FG,FG_04
+071046,San Giovanni Rotondo,Foggia,FG,FG_01
+071047,San Marco in Lamis,Foggia,FG,FG_01
+071048,San Marco la Catola,Foggia,FG,FG_04
+071049,San Nicandro Garganico,Foggia,FG,FG_01
+071050,San Paolo di Civitate,Foggia,FG,FG_03
+071051,San Severo,Foggia,FG,FG_03
+071052,Sant'Agata di Puglia,Foggia,FG,FG_04
+071053,Serracapriola,Foggia,FG,FG_03
+071054,Stornara,Foggia,FG,FG_02
+071055,Stornarella,Foggia,FG,FG_02
+071056,Torremaggiore,Foggia,FG,FG_03
+071058,Troia,Foggia,FG,FG_04
+071059,Vico del Gargano,Foggia,FG,FG_01
+071060,Vieste,Foggia,FG,FG_01
+071061,Volturara Appula,Foggia,FG,FG_04
+071062,Volturino,Foggia,FG,FG_04
+071064,Zapponeta,Foggia,FG,FG_02
+075002,Alessano,Lecce,LE,LE_02
+075003,Alezio,Lecce,LE,LE_03
+075004,Alliste,Lecce,LE,LE_03
+075005,Andrano,Lecce,LE,LE_02
+075006,Aradeo,Lecce,LE,LE_03
+075007,Arnesano,Lecce,LE,LE_01
+075008,Bagnolo del Salento,Lecce,LE,LE_02
+075009,Botrugno,Lecce,LE,LE_02
+075010,Calimera,Lecce,LE,LE_02
+075011,Campi Salentina,Lecce,LE,LE_01
+075012,Cannole,Lecce,LE,LE_02
+075013,Caprarica di Lecce,Lecce,LE,LE_02
+075014,Carmiano,Lecce,LE,LE_01
+075015,Carpignano Salentino,Lecce,LE,LE_02
+075016,Casarano,Lecce,LE,LE_03
+075017,Castri di Lecce,Lecce,LE,LE_01
+075018,Castrignano de' Greci,Lecce,LE,LE_02
+075019,Castrignano del Capo,Lecce,LE,LE_03
+075096,Castro,Lecce,LE,LE_02
+075020,Cavallino,Lecce,LE,LE_01
+075021,Collepasso,Lecce,LE,LE_03
+075022,Copertino,Lecce,LE,LE_01
+075023,Corigliano d'Otranto,Lecce,LE,LE_02
+075024,Corsano,Lecce,LE,LE_02
+075025,Cursi,Lecce,LE,LE_02
+075026,Cutrofiano,Lecce,LE,LE_02
+075027,Diso,Lecce,LE,LE_02
+075028,Gagliano del Capo,Lecce,LE,LE_03
+075029,Galatina,Lecce,LE,LE_01
+075030,Galatone,Lecce,LE,LE_03
+075031,Gallipoli,Lecce,LE,LE_03
+075032,Giuggianello,Lecce,LE,LE_02
+075033,Giurdignano,Lecce,LE,LE_02
+075034,Guagnano,Lecce,LE,LE_01
+075035,Lecce,Lecce,LE,LE_01
+075036,Lequile,Lecce,LE,LE_01
+075037,Leverano,Lecce,LE,LE_01
+075038,Lizzanello,Lecce,LE,LE_01
+075039,Maglie,Lecce,LE,LE_02
+075040,Martano,Lecce,LE,LE_02
+075041,Martignano,Lecce,LE,LE_02
+075042,Matino,Lecce,LE,LE_03
+075043,Melendugno,Lecce,LE,LE_02
+075044,Melissano,Lecce,LE,LE_03
+075045,Melpignano,Lecce,LE,LE_02
+075046,Miggiano,Lecce,LE,LE_02
+075047,Minervino di Lecce,Lecce,LE,LE_02
+075048,Monteroni di Lecce,Lecce,LE,LE_01
+075049,Montesano Salentino,Lecce,LE,LE_02
+075050,Morciano di Leuca,Lecce,LE,LE_03
+075051,Muro Leccese,Lecce,LE,LE_02
+075052,Nardò,Lecce,LE,LE_03
+075053,Neviano,Lecce,LE,LE_03
+075054,Nociglia,Lecce,LE,LE_02
+075055,Novoli,Lecce,LE,LE_01
+075056,Ortelle,Lecce,LE,LE_02
+075057,Otranto,Lecce,LE,LE_02
+075058,Palmariggi,Lecce,LE,LE_02
+075059,Parabita,Lecce,LE,LE_03
+075060,Patù,Lecce,LE,LE_03
+075061,Poggiardo,Lecce,LE,LE_02
+075097,Porto Cesareo,Lecce,LE,LE_03
+075098,Presicce-Acquarica,Lecce,LE,LE_03
+075063,Racale,Lecce,LE,LE_03
+075064,Ruffano,Lecce,LE,LE_03
+075065,Salice Salentino,Lecce,LE,LE_01
+075066,Salve,Lecce,LE,LE_03
+075095,San Cassiano,Lecce,LE,LE_02
+075068,San Cesario di Lecce,Lecce,LE,LE_01
+075069,San Donato di Lecce,Lecce,LE,LE_01
+075071,San Pietro in Lama,Lecce,LE,LE_01
+075067,Sanarica,Lecce,LE,LE_02
+075070,Sannicola,Lecce,LE,LE_03
+075072,Santa Cesarea Terme,Lecce,LE,LE_02
+075073,Scorrano,Lecce,LE,LE_02
+075074,Seclì,Lecce,LE,LE_03
+075075,Sogliano Cavour,Lecce,LE,LE_02
+075076,Soleto,Lecce,LE,LE_02
+075077,Specchia,Lecce,LE,LE_02
+075078,Spongano,Lecce,LE,LE_02
+075079,Squinzano,Lecce,LE,LE_01
+075080,Sternatia,Lecce,LE,LE_02
+075081,Supersano,Lecce,LE,LE_02
+075082,Surano,Lecce,LE,LE_02
+075083,Surbo,Lecce,LE,LE_01
+075084,Taurisano,Lecce,LE,LE_03
+075085,Taviano,Lecce,LE,LE_03
+075086,Tiggiano,Lecce,LE,LE_02
+075087,Trepuzzi,Lecce,LE,LE_01
+075088,Tricase,Lecce,LE,LE_02
+075089,Tuglie,Lecce,LE,LE_03
+075090,Ugento,Lecce,LE,LE_03
+075091,Uggiano la Chiesa,Lecce,LE,LE_02
+075092,Veglie,Lecce,LE,LE_01
+075093,Vernole,Lecce,LE,LE_01
+075094,Zollino,Lecce,LE,LE_02
+073001,Avetrana,Taranto,TA,TA_02
+073002,Carosino,Taranto,TA,TA_02
+073003,Castellaneta,Taranto,TA,TA_01
+073004,Crispiano,Taranto,TA,TA_01
+073005,Faggiano,Taranto,TA,TA_02
+073006,Fragagnano,Taranto,TA,TA_02
+073007,Ginosa,Taranto,TA,TA_01
+073008,Grottaglie,Taranto,TA,TA_02
+073009,Laterza,Taranto,TA,TA_01
+073010,Leporano,Taranto,TA,TA_02
+073011,Lizzano,Taranto,TA,TA_02
+073012,Manduria,Taranto,TA,TA_02
+073013,Martina Franca,Taranto,TA,TA_01
+073014,Maruggio,Taranto,TA,TA_02
+073015,Massafra,Taranto,TA,TA_01
+073016,Monteiasi,Taranto,TA,TA_02
+073017,Montemesola,Taranto,TA,TA_01
+073018,Monteparano,Taranto,TA,TA_02
+073019,Mottola,Taranto,TA,TA_01
+073020,Palagianello,Taranto,TA,TA_01
+073021,Palagiano,Taranto,TA,TA_01
+073022,Pulsano,Taranto,TA,TA_02
+073023,Roccaforzata,Taranto,TA,TA_02
+073024,San Giorgio Ionico,Taranto,TA,TA_02
+073025,San Marzano di San Giuseppe,Taranto,TA,TA_02
+073026,Sava,Taranto,TA,TA_02
+073029,Statte,Taranto,TA,TA_01
+073027,Taranto,Taranto,TA,TA_02
+073028,Torricella,Taranto,TA,TA_02
