@@ -1,13 +1,20 @@
-// FLAIR — collegamento tra index.html e il flow Langflow
+// FLAIR — collegamento tra le pagine di chat e i flow Langflow
 // Chiama POST {LANGFLOW_URL}/api/v1/run/{FLOW_ID} e mostra la risposta in #chat-log.
+//
+// Usato da due pagine:
+//   index.html             → chat cittadini (flow "Flair chatbot", valori qui sotto)
+//   protezione-civile.html → chat operatori (flow "Flair chatbot protezione civile")
+// Una pagina può sovrascrivere questi valori definendo window.FLAIR_CHAT_CONFIG
+// PRIMA di caricare questo script.
 
-const CONFIG = {
+const CONFIG = Object.assign({
   // In locale: Langflow avviato con chatbot/lang-compose.yml
   // In produzione: l'URL del TUO proxy (vedi README), mai Langflow diretto con la chiave nel browser
   LANGFLOW_URL: "http://localhost:7860",
   FLOW_ID: "4cc9bdc6-a477-4283-9452-7b729a868017",   // Langflow → flow → Share → API access
   API_KEY: "",                         // SOLO per sviluppo locale; lasciare vuoto se usi il proxy
-};
+  ERROR_TEXT: "Non riesco a contattare l'assistente. In caso di emergenza chiama il 112.",
+}, window.FLAIR_CHAT_CONFIG || {});
 
 const form = document.getElementById("chat-form");
 const input = document.getElementById("prompt");
@@ -75,7 +82,7 @@ async function send(message) {
     pending.textContent = await askFlow(message);
   } catch (err) {
     console.error(err);
-    pending.textContent = "Non riesco a contattare l'assistente. In caso di emergenza chiama il 112.";
+    pending.textContent = CONFIG.ERROR_TEXT;
   } finally {
     sendBtn.disabled = false;
     input.focus();
@@ -89,7 +96,7 @@ input.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input.value); }
 });
 
-// I pulsanti di suggerimento inviano il loro testo
+// I pulsanti di suggerimento inviano il loro data-prompt (se presente) o il loro testo
 suggestions.querySelectorAll("button").forEach((btn) =>
-  btn.addEventListener("click", () => send(btn.textContent))
+  btn.addEventListener("click", () => send(btn.dataset.prompt || btn.textContent))
 );
