@@ -117,14 +117,14 @@ footer{min-height:48px;padding:8px 16px;display:flex;align-items:center;justify-
   <div id="hero">
     <span class="eyebrow">Supporto decisionale · Incendi boschivi Puglia</span>
     <h1>Quale situazione analizziamo?</h1>
-    <p class="sub">Descrivi una segnalazione (luogo o coordinate) oppure chiedi livelli di rischio per settore AIB, meteo e storico incendi. L'assistente propone priorità e azioni con i parametri a supporto: la decisione resta all'operatore.</p>
+    <p class="sub">Parti dalle coordinate di una segnalazione: l'assistente riassume vegetazione e valore ambientale, vento e possibile propagazione, storico della zona e livello di rischio, e propone una priorità. Le verifiche su persone, case e presenze sul posto restano all'operatore.</p>
   </div>
 
   <div id="chat-log" aria-live="polite"></div>
 
   <form id="chat-form">
     <label for="prompt" class="sr">Scrivi un messaggio</label>
-    <textarea id="prompt" rows="3" placeholder="Es. Incendio segnalato a 41.82, 15.99: analizza e assegna una priorità…"></textarea>
+    <textarea id="prompt" rows="3" placeholder="Es. Incendio a 41.85, 16.05, fiamme alte su pineta: che priorità ha?"Es. Incendio segnalato a 41.82, 15.99: analizza e assegna una priorità…"></textarea>
     <div class="row">
       <span class="hint">Invio per inviare · Maiusc+Invio per andare a capo</span>
       <button id="send-btn" type="submit" aria-label="Invia messaggio">
@@ -134,10 +134,17 @@ footer{min-height:48px;padding:8px 16px;display:flex;align-items:center;justify-
   </form>
 
   <div id="suggestions">
-    <button type="button" class="featured" id="sugg-segnalazione"
-      data-prompt="È stato segnalato un incendio a Monte Sant'Angelo (FG), coordinate 41.819000, 15.987000, settore AIB FG_01, codice colore ARANCIONE. Note del segnalante: Fumo denso visibile dalla strada, fiamme su macchia mediterranea in espansione verso il bosco. Vento moderato da nord-ovest. Nessuna abitazione coinvolta al momento. Analizza la situazione e assegna una priorità.">
+    <button type="button" class="featured" id="sugg-segnalazione">
       <strong>Analizza la segnalazione in corso</strong>
       <span id="sugg-segnalazione-sub">Monte Sant'Angelo (FG) · codice ARANCIONE</span>
+    </button>
+    <button type="button" id="sugg-priorita">
+      <strong>Priorità tra gli incendi attivi</strong>
+      <span id="sugg-priorita-sub">Dove mandare prima le squadre</span>
+    </button>
+    <button type="button" data-prompt-tpl="Prevenzione per la settimana dal {oggi}: elenca i 20-30 punti della Puglia dove negli ultimi anni gli incendi si sono ripetuti più spesso (comune, settore AIB, numero di eventi, anno più recente). Incrocia con il livello di rischio dell'ultimo bollettino e indica quali zone monitorare per prime, privilegiando boschi, pinete e aree di alto valore ambientale.">
+      <strong>Zone da attenzionare questa settimana</strong>
+      <span>Inneschi ripetuti e bollettino di rischio</span>
     </button>
     <button type="button"
       data-prompt="Dammi il quadro del rischio incendi per tutti i settori AIB della Puglia dall'ultimo bollettino: livello per ogni giorno di previsione, evidenziando i settori diversi dal livello prevalente. Indica la data di emissione.">
@@ -145,18 +152,14 @@ footer{min-height:48px;padding:8px 16px;display:flex;align-items:center;justify-
       <span>Ultimo bollettino, tutti i settori AIB</span>
     </button>
     <button type="button"
-      data-prompt="Quali sono le condizioni meteo rilevanti per gli incendi nel settore FG_01: velocità e direzione del vento, temperatura e umidità? Indica verso dove spingerebbe il fuoco.">
-      <strong>Meteo e vento di un settore</strong>
-      <span>Vento, direzione, temperatura, umidità (FG_01)</span>
-    </button>
-    <button type="button" data-prompt-tpl="Ci sono focolai rilevati dai satelliti oggi ({oggi}) nel comune di Monte Sant'Angelo? Per ciascuno indica ora, affidabilità e potenza radiativa (FRP).">
-      <strong>Focolai satellitari di oggi</strong>
-      <span>Rilevamenti FIRMS per comune</span>
+      data-prompt="Condizioni per la propagazione nel settore FG_01: velocità e direzione del vento, temperatura, umidità e giorni dall'ultima pioggia. Indica verso dove si propagherebbe un incendio e come cambia tra bosco (fuoco di chioma) e macchia bassa o sterpaglia (fuoco radente).">
+      <strong>Vento e propagazione</strong>
+      <span>Meteo del settore e direzione del fuoco (FG_01)</span>
     </button>
     <button type="button"
-      data-prompt="Riassumi gli incendi passati nel settore FG_01: quanti sono, il più recente, le tipologie e i codici colore più frequenti, i mesi ricorrenti e le condizioni di vento tipiche.">
-      <strong>Storico incendi nella zona</strong>
-      <span>Ricorrenze, tipologie e condizioni tipiche</span>
+      data-prompt="Quante volte è bruciato negli ultimi anni intorno a Vico del Gargano (41.852, 16.048), nel raggio di circa 2 km? Riassumi date, tipologie e codici colore, e dimmi se si tratta di inneschi ricorrenti nello stesso punto.">
+      <strong>Storico di un punto</strong>
+      <span>Quante volte è già bruciato lì</span>
     </button>
   </div>
 </main>
@@ -183,26 +186,48 @@ footer{min-height:48px;padding:8px 16px;display:flex;align-items:center;justify-
   const oggi = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
   document.querySelectorAll("[data-prompt-tpl]").forEach(b => { b.dataset.prompt = b.dataset.promptTpl.replace("{oggi}", oggi); });
 
-  // Il suggerimento "segnalazione in corso" legge lo stesso CSV della mappa (data/segnalazione_simulata.csv).
-  // Se il file non si carica resta il testo scritto sopra, che ne è una copia.
-  fetch("data/segnalazione_simulata.csv", { cache: "no-store" })
-    .then(r => { if (!r.ok) throw 0; return r.text(); })
-    .then(t => {
-      const rows = [], re = /("([^"]|"")*"|[^,\r\n]*)(,|\r?\n|$)/g;
-      let row = [], m;
-      while ((m = re.exec(t)) && m[0] !== "") {
-        let v = m[1]; if (v.startsWith('"')) v = v.slice(1, -1).replace(/""/g, '"');
-        row.push(v);
-        if (m[3] !== ",") { rows.push(row); row = []; }
-      }
-      const [h, r0] = rows; if (!h || !r0) return;
-      const s = Object.fromEntries(h.map((k, i) => [k.trim(), (r0[i] || "").trim()]));
-      const b = $("sugg-segnalazione");
-      b.dataset.prompt = `È stato segnalato un incendio a ${s.comune} (${s.provincia}), coordinate ${s.lat}, ${s.lon}, settore AIB ${s.settore_aib}, codice colore ${s.codice_colore}.` +
-        (s.note ? ` Note del segnalante: ${s.note}` : "") + " Analizza la situazione e assegna una priorità.";
-      $("sugg-segnalazione-sub").textContent = `${s.comune} (${s.provincia}) · codice ${s.codice_colore}`;
-    })
-    .catch(() => {});
+  // I suggerimenti "segnalazione in corso" e "priorità" leggono gli stessi CSV della pagina Incendi attivi.
+  const parseCSV = t => {
+    const rows = [], re = /("([^"]|"")*"|[^,\r\n]*)(,|\r?\n|$)/g;
+    let row = [], m;
+    while ((m = re.exec(t)) && m[0] !== "") {
+      let v = m[1]; if (v.startsWith('"')) v = v.slice(1, -1).replace(/""/g, '"');
+      row.push(v);
+      if (m[3] !== ",") { rows.push(row); row = []; }
+    }
+    const [h, ...body] = rows;
+    return h ? body.map(r => Object.fromEntries(h.map((k, i) => [k.trim(), (r[i] || "").trim()]))) : [];
+  };
+  const promptSegnalazione = s =>
+    `Nuova segnalazione di incendio: ${s.comune} (${s.provincia}), coordinate ${s.lat}, ${s.lon}, settore AIB ${s.settore_aib}, codice colore ${s.codice_colore}.` +
+    (s.note ? ` Note del segnalante: ${s.note}` : "") +
+    " Analizzala come in sala operativa: 1) cosa c'è nel punto e intorno (tipo di vegetazione e combustibile, valore ambientale, boschi o aree protette vicine);" +
+    " 2) vento e direzione probabile di propagazione, indicando cosa si trova sottovento; 3) quante volte ha già bruciato in quella zona;" +
+    " 4) livello di rischio dell'ultimo bollettino per il settore. Assegna una priorità (ALTA, MEDIA o BASSA) spiegando i fattori, suggerisci le azioni e indica i dati mancanti." +
+    " Non conosci in tempo reale persone, case, campeggi o animali presenti: indicali come verifiche da fare.";
+  const ORDINE = { ROSSO: 0, ARANCIONE: 1, GIALLO: 2, VERDE: 3 };
+  const promptPriorita = list =>
+    `Ci sono ${list.length} incendi in corso contemporaneamente:\n` +
+    list.map(s => `- ${s.comune} (${s.provincia}), settore ${s.settore_aib}, codice ${s.codice_colore}, coordinate ${s.lat}, ${s.lon}${s.note ? ": " + s.note : ""}`).join("\n") +
+    "\nOrdinali per priorità di intervento considerando il valore ambientale e il tipo di vegetazione (bosco o pineta rispetto a pascolo, stoppie o sterpaglia)," +
+    " vento e possibile propagazione, storico della zona e vicinanza a case o zone frequentate. Indica dove mandare prima le squadre, dove basta il monitoraggio e perché.";
+
+  const sim = { id:"SIM-001", lat:"41.819000", lon:"15.987000", comune:"Monte Sant'Angelo", provincia:"FG", settore_aib:"FG_01", codice_colore:"ARANCIONE",
+    note:"Fumo denso visibile dalla strada, fiamme su macchia mediterranea in espansione verso il bosco. Vento moderato da nord-ovest. Nessuna abitazione coinvolta al momento." };
+  const imposta = (segnalata, tutti) => {
+    $("sugg-segnalazione").dataset.prompt = promptSegnalazione(segnalata);
+    $("sugg-segnalazione-sub").textContent = `${segnalata.comune} (${segnalata.provincia}) · codice ${segnalata.codice_colore}`;
+    const ord = [...tutti].sort((a, b) => (ORDINE[a.codice_colore] ?? 9) - (ORDINE[b.codice_colore] ?? 9));
+    $("sugg-priorita").dataset.prompt = promptPriorita(ord);
+    $("sugg-priorita-sub").textContent = `${ord.length} ${ord.length === 1 ? "incendio" : "incendi"} in corso · dove mandare prima le squadre`;
+  };
+  imposta(sim, [sim]);   // valori di riserva se i CSV non si caricano
+  const leggi = f => fetch(f, { cache: "no-store" }).then(r => { if (!r.ok) throw 0; return r.text(); }).then(parseCSV).catch(() => []);
+  Promise.all([leggi("data/segnalazione_simulata.csv"), leggi("data/incendi_attivi.csv")]).then(([s1, altri]) => {
+    const segnalata = s1[0] || sim;
+    const tutti = [...new Map([segnalata, ...altri].map(r => [r.id || r.comune, r])).values()];
+    imposta(segnalata, tutti);
+  });
 })();
 
 // Flow Langflow dedicato agli operatori ("Flair chatbot protezione civile").
