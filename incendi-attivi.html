@@ -64,6 +64,8 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#1e2a2f;color:#f4f6f6}
 .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.4;min-width:230px}
 .leaflet-container a.leaflet-popup-close-button{color:#f4f6f6}
+.sim-strip{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:800;background:#b3261e;color:#fff;font-size:13px;font-weight:600;padding:6px 14px;border-radius:999px;box-shadow:0 4px 12px rgba(0,0,0,.35);white-space:nowrap;pointer-events:none}
+#map{position:relative}
 .pop-sim{margin-top:8px;font-size:11.5px;color:#98a8ae}
 .pin{position:relative}
 .pin svg{filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
@@ -103,17 +105,17 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
 </script>
 
 <div class="layout">
-  <div id="map" role="region" aria-label="Mappa degli incendi attivi in Puglia"></div>
+  <div id="map" role="region" aria-label="Mappa degli incendi attivi in Puglia (simulazione)"><div class="sim-strip" aria-hidden="true">Simulazione · dati non reali</div></div>
 
   <aside>
     <div>
       <h1>Incendi attivi</h1>
-      <p class="lead">Segnalazioni in corso sul territorio pugliese. Seleziona un incendio nell'elenco o sulla mappa per i dettagli.</p>
+      <p class="lead">Simulazione di come apparirebbero gli incendi in corso sul territorio pugliese. Seleziona un incendio nell'elenco o sulla mappa per i dettagli.</p>
     </div>
 
     <div class="demo" role="note">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
-      <span>Dati dimostrativi: tutte le segnalazioni mostrate sono simulate e non corrispondono a incendi reali.</span>
+      <span><strong>Questa è una simulazione.</strong> Le segnalazioni mostrate sono inventate e non corrispondono a incendi reali. In futuro i dati potrebbero arrivare da fonti ufficiali, come la mappa degli eventi in corso di <strong>SINAPSI</strong>, il sistema della Protezione Civile della Regione Puglia.</span>
     </div>
 
     <section aria-labelledby="h-codici">

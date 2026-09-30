@@ -69,6 +69,11 @@ details input[type=password],details input[type=text]{width:100%;font:inherit;co
 .btn:disabled{opacity:.5;cursor:default}
 .msg{font-size:.88rem;margin:8px 0 0}
 .msg.err{color:var(--err)}
+.ritardo{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:10px 12px;font-size:.9rem}
+.ritardo h2{font-size:.98rem;margin:0 0 4px}
+.ritardo p{margin:0 0 6px}
+.ritardo ol{margin:0 0 6px;padding-left:18px;display:grid;gap:2px}
+.ritardo p:last-child{margin:0}
 .note{font-size:.8rem;color:var(--muted);margin:0;border-top:1px solid var(--line);padding-top:12px}
 .note a{color:inherit}
 .tema{font:inherit;font-size:.82rem;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:4px 10px;cursor:pointer;align-self:flex-start}
@@ -109,7 +114,7 @@ main.demo-on .avviso{top:48px}
 <aside>
   <header>
     <h1>Anomalie termiche in Puglia</h1>
-    <p class="sub">Punti di calore rilevati dai satelliti NASA (VIIRS e MODIS) sul territorio regionale. I dati arrivano alcune ore dopo il passaggio del satellite.</p>
+    <p class="sub">Punti di calore rilevati dai satelliti NASA (VIIRS e MODIS) sul territorio regionale. I dati compaiono sulla mappa con un ritardo di circa 3 ore rispetto al passaggio del satellite.</p>
     <nav><a href="index.html">Home FLAIR</a> · <a href="storico.html">Vai allo storico degli incendi 2017–2024</a></nav>
   </header>
 
@@ -118,6 +123,17 @@ main.demo-on .avviso{top:48px}
     <p class="sub2" id="nPunti"></p>
     <p class="upd" id="upd">Caricamento dei dati…</p>
     <ul class="fonti" id="fonti"></ul>
+  </section>
+
+  <section class="ritardo" aria-labelledby="h-ritardo">
+    <h2 id="h-ritardo">Perché c'è un ritardo di circa 3 ore</h2>
+    <p>La mappa non mostra il fuoco in diretta. Tra il passaggio del satellite e il punto sulla mappa:</p>
+    <ol>
+      <li><strong>Elaborazione NASA</strong>: i dati "in tempo quasi reale" vengono pubblicati da 1 a 3 ore dopo l'osservazione.</li>
+      <li><strong>Aggiornamento del sito</strong>: FLAIR scarica i nuovi dati ogni 30 minuti.</li>
+      <li><strong>Pubblicazione</strong>: fino a circa 10 minuti in più prima che la pagina mostri la versione nuova.</li>
+    </ol>
+    <p>In più i satelliti passano sulla Puglia solo poche volte al giorno: un incendio iniziato tra due passaggi compare solo al passaggio successivo. L'orario indicato su ogni punto è quello dell'osservazione del satellite, non dell'arrivo sulla mappa.</p>
   </section>
 
   <fieldset>
