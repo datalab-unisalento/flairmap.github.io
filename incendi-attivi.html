@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Incendi attivi · FLAIR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --bg:#1a262c; --panel:#213039; --panel2:#22323b; --line:#36474f; --line2:#2a3a42;
+  --ink:#e8eef0; --muted:#a3b2b8; --faint:#8b9ca3; --accent:#e8834a; --link:#f0a36b;
+  --verde:#3fa66b; --giallo:#f2c230; --arancione:#f07a1f; --rosso:#d7392b;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+a{color:var(--link)}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+header{height:72px;flex:none;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line2)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{display:block;width:auto;height:44px}
+.brand span{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;letter-spacing:.04em;color:#fff}
+.brand span b{color:var(--accent);font-weight:600}
+.back{height:40px;padding:0 16px;display:flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.back:hover{border-color:var(--accent);color:var(--ink)}
+
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:1fr 390px}
+#map{height:100%;min-height:320px;background:#0f181c}
+aside{border-left:1px solid var(--line2);overflow-y:auto;padding:22px 22px 28px;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:28px;letter-spacing:-.01em}
+h2{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+.demo{padding:10px 12px;border-radius:10px;background:#3a2a12;color:#ffd8a8;font-size:13px;line-height:1.45;display:flex;gap:8px}
+.demo svg{flex:none;margin-top:1px}
+
+/* Riepilogo e filtri per codice colore */
+.counts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.count{padding:10px 8px 9px;border-radius:12px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left}
+.count:hover{border-color:var(--accent)}
+.count[aria-pressed="false"]{opacity:.45}
+.count .n{font-size:22px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.count .l{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px;letter-spacing:.02em}
+.hint{font-size:12.5px;color:var(--faint);margin-top:8px;line-height:1.4}
+
+/* Elenco */
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:6px 16px}
+.item{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line2);cursor:pointer}
+.item:first-child{border-top:0}
+.item:hover .item-t,.item:focus-visible .item-t{color:var(--link)}
+.item.sel .item-t{color:var(--link)}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;margin-top:4px;box-shadow:0 0 0 3px rgba(255,255,255,.08);display:inline-block}
+.item-t{font-weight:600;font-size:14.5px}
+.item-s{font-size:13px;color:var(--muted);margin-top:2px;line-height:1.4}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+
+footer{flex:none;height:40px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--faint);border-top:1px solid var(--line2)}
+
+/* Leaflet */
+.leaflet-container{font-family:inherit}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#1e2a2f;color:#f4f6f6}
+.leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.4;min-width:230px}
+.leaflet-container a.leaflet-popup-close-button{color:#f4f6f6}
+.pop-sim{margin-top:8px;font-size:11.5px;color:#98a8ae}
+.pin{position:relative}
+.pin svg{filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
+.pulse{position:absolute;left:50%;bottom:0;width:18px;height:18px;margin-left:-9px;margin-bottom:-9px;border-radius:50%;animation:pulse 1.8s ease-out infinite;pointer-events:none}
+@keyframes pulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none;opacity:.35;transform:scale(1.8)}}
+
+@media (max-width:860px){
+  header{padding:0 16px}
+  .layout{grid-template-columns:1fr;grid-template-rows:55vh auto}
+  aside{border-left:0;border-top:1px solid var(--line2);padding:18px 16px 24px}
+  .back .lbl{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" id="home-link" href="index.html" aria-label="FLAIR, torna alla home">
+    <img src="assets/flair-logo.png" alt="" width="31" height="44">
+    <span>FL<b>AI</b>R</span>
+  </a>
+  <a class="back" id="back-link" href="index.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+    <span class="lbl" id="back-lbl">Torna alla home</span>
+  </a>
+</header>
+<script>
+  // Operatore Protezione Civile loggato: i link di ritorno portano alla sua area
+  try {
+    if (sessionStorage.getItem("flair_pc_session")) {
+      document.getElementById("home-link").href = "protezione-civile.html";
+      document.getElementById("back-link").href = "protezione-civile.html";
+      document.getElementById("back-lbl").textContent = "Torna all'area operativa";
+    }
+  } catch (e) {}
+</script>
+
+<div class="layout">
+  <div id="map" role="region" aria-label="Mappa degli incendi attivi in Puglia"></div>
+
+  <aside>
+    <div>
+      <h1>Incendi attivi</h1>
+      <p class="lead">Segnalazioni in corso sul territorio pugliese. Seleziona un incendio nell'elenco o sulla mappa per i dettagli.</p>
+    </div>
+
+    <div class="demo" role="note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+      <span>Dati dimostrativi: tutte le segnalazioni mostrate sono simulate e non corrispondono a incendi reali.</span>
+    </div>
+
+    <section aria-labelledby="h-codici">
+      <h2 id="h-codici">Per codice colore</h2>
+      <div class="counts" id="counts"></div>
+      <div class="hint">Tocca un codice per mostrarlo o nasconderlo.</div>
+    </section>
+
+    <section aria-labelledby="h-elenco">
+      <h2 id="h-elenco">Elenco <span id="n-vis"></span></h2>
+      <div class="card"><div id="lista"><div class="empty">Caricamento…</div></div></div>
+    </section>
+  </aside>
+</div>
+
+<footer>In caso di emergenza chiama subito il 112.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(() => {
+  // ---- Dati -------------------------------------------------------------------
+  // data/segnalazione_simulata.csv → incendio usato per la simulazione (1 riga)
+  // data/incendi_attivi.csv       → altre segnalazioni finte
+  const FILES = ["data/segnalazione_simulata.csv", "data/incendi_attivi.csv"];
+  const FILE_COMUNI = "scripts/puglia_comuni.json";
+  const CODICI = [
+    { k:"ROSSO",     label:"Rosso",     color:"#d7392b" },
+    { k:"ARANCIONE", label:"Arancione", color:"#f07a1f" },
+    { k:"GIALLO",    label:"Giallo",    color:"#f2c230" },
+    { k:"VERDE",     label:"Verde",     color:"#3fa66b" },
+  ];
+  const COLORE = Object.fromEntries(CODICI.map(c => [c.k, c.color]));
+  const PESO = Object.fromEntries(CODICI.map((c, i) => [c.k, i]));  // ROSSO prima
+  // Copia di riserva della segnalazione simulata se i CSV non si caricano (es. pagina aperta da file://)
+  const FALLBACK = [{ id:"SIM-001", data_ora:"2026-09-29T12:40:00+02:00", lat:"41.819000", lon:"15.987000",
+    comune:"Monte Sant'Angelo", provincia:"FG", settore_aib:"FG_01", codice_colore:"ARANCIONE",
+    note:"Fumo denso visibile dalla strada, fiamme su macchia mediterranea in espansione verso il bosco. Vento moderato da nord-ovest. Nessuna abitazione coinvolta al momento." }];
+
+  // ---- Utilità ----------------------------------------------------------------
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function parseCSV(text){
+    const rows=[]; let row=[], val="", q=false;
+    for (let i=0;i<text.length;i++){
+      const c=text[i];
+      if (q){ if (c==='"'){ if (text[i+1]==='"'){ val+='"'; i++; } else q=false; } else val+=c; }
+      else if (c==='"') q=true;
+      else if (c===','){ row.push(val); val=""; }
+      else if (c==='\n' || c==='\r'){ if (c==='\r' && text[i+1]==='\n') i++; row.push(val); if (row.some(v=>v!=="")) rows.push(row); row=[]; val=""; }
+      else val+=c;
+    }
+    row.push(val); if (row.some(v=>v!=="")) rows.push(row);
+    const [head, ...body] = rows;
+    return body.map(r => Object.fromEntries(head.map((h,i)=>[h.trim(), (r[i] ?? "").trim()])));
+  }
+  function quando(iso){
+    const d = new Date(iso); if (isNaN(d)) return "";
+    const oggi = new Date(), ieri = new Date(Date.now() - 864e5);
+    const ora = d.toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit" });
+    if (d.toDateString() === oggi.toDateString()) return `oggi ${ora}`;
+    if (d.toDateString() === ieri.toDateString()) return `ieri ${ora}`;
+    return d.toLocaleDateString("it-IT", { day:"2-digit", month:"2-digit" }) + ` ${ora}`;
+  }
+
+  // ---- Mappa ------------------------------------------------------------------
+  const map = L.map("map").setView([41.0, 16.6], 8);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    { maxZoom:18, attribution:"Tiles &copy; Esri" }).addTo(map);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+    { maxZoom:18, opacity:.85 }).addTo(map);
+  fetch(FILE_COMUNI).then(r => r.ok ? r.json() : null).then(gj => {
+    if (gj) L.geoJSON(gj, { interactive:false, style:{ color:"#f0a36b", weight:.6, opacity:.5, fill:false } }).addTo(map).bringToBack();
+  }).catch(() => {});
+
+  const pinIcon = (color, pulse) => L.divIcon({
+    className:"pin", iconSize:[30,40], iconAnchor:[15,38], popupAnchor:[0,-34],
+    html:(pulse ? `<span class="pulse" style="background:${color}"></span>` : "") +
+      `<svg width="30" height="40" viewBox="0 0 30 40" aria-hidden="true"><path d="M15 1C7.3 1 1.5 6.9 1.5 14.3 1.5 24.6 15 39 15 39s13.5-14.4 13.5-24.7C28.5 6.9 22.7 1 15 1z" fill="${color}" stroke="#1a262c" stroke-width="2"/><path d="M15 8c.6 2.3 3.3 3.6 3.3 6.6a3.3 3.3 0 0 1-6.6 0c0-1.6 1-2.6 1.6-3.3.2 1 .8 1.7 1.7 2 0-2 0-3.6 0-5.3z" fill="#1a262c"/></svg>`
+  });
+  const popupHTML = r => `
+    <strong>${esc(r.comune)} (${esc(r.provincia)})</strong><br>
+    <span style="color:${COLORE[r.codice_colore]||"#e8eef0"};font-weight:600">● ${esc(r.codice_colore)}</span> · ${esc(quando(r.data_ora))}<br>
+    ${esc(r.lat)}, ${esc(r.lon)} · Settore AIB ${esc(r.settore_aib || "—")}
+    ${r.note ? `<div style="margin-top:6px">${esc(r.note)}</div>` : ""}
+    <div class="pop-sim">Segnalazione simulata · ${esc(r.id)}</div>`;
+
+  // ---- Stato e rendering --------------------------------------------------------
+  let incendi = [];                       // { rec, marker }
+  const attivi = new Set(CODICI.map(c => c.k));
+  let selezionato = null;
+
+  function renderCounts(){
+    $("counts").innerHTML = CODICI.map(c => {
+      const n = incendi.filter(x => x.rec.codice_colore === c.k).length;
+      return `<button type="button" class="count" data-k="${c.k}" aria-pressed="${attivi.has(c.k)}" aria-label="${c.label}: ${n} incendi">
+        <span class="n">${n}</span><span class="l"><i class="dot" style="background:${c.color};width:9px;height:9px;margin:0;box-shadow:none"></i>${c.label}</span></button>`;
+    }).join("");
+    $("counts").querySelectorAll(".count").forEach(b => b.addEventListener("click", () => {
+      const k = b.dataset.k; attivi.has(k) ? attivi.delete(k) : attivi.add(k);
+      aggiorna();
+    }));
+  }
+
+  function renderLista(){
+    const vis = incendi.filter(x => attivi.has(x.rec.codice_colore));
+    $("n-vis").textContent = `(${vis.length})`;
+    $("lista").innerHTML = vis.length ? vis.map(x => `
+      <div class="item${x === selezionato ? " sel" : ""}" data-id="${esc(x.rec.id)}" tabindex="0" role="button" aria-label="Mostra ${esc(x.rec.comune)} sulla mappa">
+        <i class="dot" style="background:${COLORE[x.rec.codice_colore]||"#e8eef0"}"></i>
+        <div>
+          <div class="item-t">${esc(x.rec.comune)} (${esc(x.rec.provincia)})</div>
+          <div class="item-s">${esc(x.rec.codice_colore)} · ${esc(quando(x.rec.data_ora))} · ${esc(x.rec.settore_aib)}</div>
+        </div>
+      </div>`).join("") : `<div class="empty">Nessun incendio con i codici selezionati.</div>`;
+    $("lista").querySelectorAll(".item").forEach(el => {
+      const x = incendi.find(i => i.rec.id === el.dataset.id);
+      const go = () => { map.setView(x.marker.getLatLng(), 12); x.marker.openPopup(); };
+      el.addEventListener("click", go);
+      el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+  }
+
+  function aggiorna(){
+    incendi.forEach(x => {
+      const on = attivi.has(x.rec.codice_colore);
+      if (on && !map.hasLayer(x.marker)) x.marker.addTo(map);
+      if (!on && map.hasLayer(x.marker)) map.removeLayer(x.marker);
+    });
+    renderCounts(); renderLista();
+  }
+
+  function mostra(recs){
+    // più gravi prima, poi più recenti
+    recs.sort((a, b) => (PESO[a.codice_colore] ?? 9) - (PESO[b.codice_colore] ?? 9) || new Date(b.data_ora) - new Date(a.data_ora));
+    incendi = recs.filter(r => isFinite(+r.lat) && isFinite(+r.lon)).map(rec => {
+      const marker = L.marker([+rec.lat, +rec.lon], {
+        icon: pinIcon(COLORE[rec.codice_colore] || "#e8eef0", rec.codice_colore === "ROSSO"),
+        title: `${rec.comune} · ${rec.codice_colore}`, keyboard: true
+      }).bindPopup(popupHTML(rec));
+      const x = { rec, marker };
+      marker.on("popupopen", () => { selezionato = x; renderLista(); });
+      marker.on("popupclose", () => { if (selezionato === x) { selezionato = null; renderLista(); } });
+      return x;
+    });
+    aggiorna();
+    if (incendi.length) map.fitBounds(L.latLngBounds(incendi.map(x => x.marker.getLatLng())), { padding:[40,40], maxZoom:10 });
+  }
+
+  Promise.allSettled(FILES.map(f => fetch(f, { cache:"no-store" }).then(r => { if (!r.ok) throw 0; return r.text(); })))
+    .then(res => {
+      const recs = res.filter(r => r.status === "fulfilled").flatMap(r => parseCSV(r.value));
+      const unici = [...new Map(recs.map(r => [r.id, r])).values()];
+      mostra(unici.length ? unici : FALLBACK);
+    });
+})();
+</script>
+</body>
+</html>
