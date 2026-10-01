@@ -390,7 +390,6 @@
     if (attesaTesto) { const f = attesaTesto; attesaTesto = null; log.querySelectorAll(".fr-qr button").forEach(b => b.disabled = true); bubble(testo, "me"); input.value = ""; f(testo); return true; }
     if (inCorso) { bubble(testo, "me"); input.value = ""; say("Completa prima la segnalazione in corso, usando i pulsanti qui sopra."); return true; }
     if (INTENTO.test(testo)) { input.value = ""; avvia(testo); return true; }
-    if (INTENTO_AREE.test(testo)) { input.value = ""; aree_daDomanda(testo); return true; }
     if (chatVera()) return false;                // lascia la risposta al chatbot Langflow
     bubble(testo, "me"); input.value = "";
     say("L'assistente non è ancora collegato a questa versione del sito, quindi non posso rispondere a questa domanda. Posso però aiutarti a segnalare erba alta, sterpaglie o terreni incolti vicino a un bosco: scrivi «segnala».");
@@ -408,7 +407,6 @@
     btn.addEventListener("click", e => {
       const t = btn.dataset.prompt || btn.textContent;
       if (btn.hasAttribute("data-segnala")) { e.stopImmediatePropagation(); avvia(t); return; }
-      if (btn.hasAttribute("data-aree")) { e.stopImmediatePropagation(); aree_daDomanda(t); return; }
       if (gestisci(t)) e.stopImmediatePropagation();
     }, true);
   });
@@ -451,12 +449,10 @@
       const scelta = await choose([
         { value: "rischio", label: `Rischio incendi oggi a ${info.comune}`, primary: true },
         { value: "vicini", label: "Ci sono incendi vicino a me?" },
-        { value: "aree", label: "Aree protette vicino a me" },
         { value: "segnala", label: "Segnala qui erba alta o sterpaglie" },
       ]);
-      if (scelta.value === "rischio") { bubble(scelta.label, "me"); await rispondiRischio(info); }
+      if (scelta.value === "rischio") { bubble(scelta.label, "me"); await rispondiRischio({ ...info, ...pos }); }
       else if (scelta.value === "vicini") chiedi(`Ci sono incendi in corso vicino a ${info.comune}?`);
-      else if (scelta.value === "aree") { bubble(scelta.label, "me"); await rispondiAree(pos); }
       else avvia(scelta.label, pos);
     } catch (err) {
       attesa.remove();
@@ -473,77 +469,20 @@
     const rk = rischio(info.settore);
     if (!rk) { await say(`Non ho il bollettino per il settore di ${info.comune}. Puoi consultarlo sul sito della Protezione Civile Puglia.`); return; }
     const em = new Date(boll.emissione + "T12:00:00").toLocaleDateString("it-IT");
-    await say(`${rk.oggi ? "Oggi" : "Il " + dataIt(rk.giorno)} a ${info.comune} (settore ${info.settore}) il rischio incendi è ${rk.livello}.\n` +
+    const fatto = await say(`${rk.oggi ? "Oggi" : "Il " + dataIt(rk.giorno)} a ${info.comune} (settore ${info.settore}) il rischio incendi è ${rk.livello}.\n` +
       `${boll.scenari[rk.livello]}\n\n` +
       (ORDINE_LIV.indexOf(rk.livello) >= 2 ? "Evita qualsiasi fuoco all'aperto e segnala subito fumo o fiamme al 112.\n" : "Niente fuochi vicino a boschi e sterpaglie; se vedi fumo chiama il 112.\n") +
       `Fonte: bollettino regionale di previsione incendi del ${em}, Protezione Civile Puglia.` +
       (rk.oggi ? "" : "\nAttenzione: non ho ancora il bollettino di oggi, questo è l'ultimo disponibile."));
-  }
-
-  // ---------------------------------------------------------------- aree protette vicine
-  // Dati: Regione Puglia, "Parchi, aree naturali protette, siti di importanza rilevante" (rev. 11/2022, IODL 2.0)
-  const FILE_AREE = ["data/aree_protette_parchi.geojson", "data/aree_protette_natura2000.geojson"];
-  const INTENTO_AREE = /aree (protette|sensibili|naturali)|parch[io] vicin|boschi.*vicin|riserv[ae] vicin/i;
-  let aree = null;
-  function caricaAree() {
-    if (caricaAree.p) return caricaAree.p;
-    caricaAree.p = Promise.all(FILE_AREE.map((f, i) => fetch(f).then(r => r.ok ? r.json() : null).catch(() => null)
-      .then(gj => (gj ? gj.features : []).map(ft => ({ ...ft.properties, n2000: i === 1, geom: ft.geometry })))))
-      .then(l => { aree = l.flat(); return aree; });
-    return caricaAree.p;
-  }
-  function distanzaKm(lat, lon, g) {
-    const KM = 111.32, kx = KM * Math.cos(lat * Math.PI / 180);
-    const ps = g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : [];
-    let best = Infinity;
-    for (const p of ps) {
-      if (inRing(lon, lat, p[0]) && !p.slice(1).some(h => inRing(lon, lat, h))) return 0;
-      for (const ring of p) for (let i = 1; i < ring.length; i++) {
-        const ax = (ring[i-1][0] - lon) * kx, ay = (ring[i-1][1] - lat) * KM, bx = (ring[i][0] - lon) * kx, by = (ring[i][1] - lat) * KM;
-        const dx = bx - ax, dy = by - ay, l2 = dx*dx + dy*dy;
-        const t = l2 ? Math.max(0, Math.min(1, -(ax*dx + ay*dy) / l2)) : 0;
-        best = Math.min(best, Math.hypot(ax + t*dx, ay + t*dy));
-      }
-    }
-    return best;
-  }
-  const km = d => d === 0 ? "ci sei dentro" : d < 1 ? "a meno di 1 km" : `a ${d.toFixed(1).replace(".", ",")} km`;
-  async function rispondiAree(pos) {
-    await caricaAree();
-    if (!aree.length) { await say("Non riesco a caricare le aree protette in questo momento."); return; }
-    const vicine = aree.map(a => ({ ...a, d: distanzaKm(pos.lat, pos.lon, a.geom) }))
-      .filter(a => a.d <= 15).sort((x, y) => x.d - y.d);
-    const visti = new Set(), elenco = vicine.filter(a => !visti.has(a.nome) && visti.add(a.nome)).slice(0, 4);
-    const box = document.createElement("div");
-    if (!elenco.length) box.appendChild(document.createTextNode("Non ci sono aree protette entro 15 km da te."));
-    else {
-      box.appendChild(document.createTextNode("Le aree protette più vicine a te:\n" +
-        // volutamente senza il livello di rischio per area: l'incrocio aree × rischio resta all'area Protezione Civile
-        elenco.map(a => `• ${a.nome} — ${a.n2000 ? "Natura 2000" : a.tipo}, ${km(a.d)}`).join("\n") +
-        "\n\nSono i luoghi di maggior valore naturale: niente fuochi, e se vedi fumo chiama subito il 112.\n"));
-    }
     const a = document.createElement("a");
-    a.href = `aree-protette.html?lat=${pos.lat.toFixed(5)}&lon=${pos.lon.toFixed(5)}`;
-    a.className = "fr-btn"; a.style.display = "inline-block"; a.style.marginTop = "8px"; a.style.textDecoration = "none";
-    a.textContent = "Apri la mappa delle aree protette";
-    box.appendChild(a);
-    await wait(300); bubble(box);
-  }
-  async function aree_daDomanda(testo) {
-    bubble(testo, "me");
-    if (!navigator.geolocation) { await say("Per trovare le aree protette vicine mi serve la tua posizione, ma il browser non la fornisce. Puoi aprire la mappa delle aree protette dal pulsante in alto."); return; }
-    const attesa = await say("Per cercarle mi serve la tua posizione: cerco dove sei…");
-    try {
-      const p = await leggiPosizione(); attesa.remove();
-      await rispondiAree({ lat: p.coords.latitude, lon: p.coords.longitude });
-    } catch (err) {
-      attesa.remove();
-      await say(err && err.code === 1 ? "Non ho il permesso di leggere la posizione. Puoi attivarlo dalle impostazioni del browser, oppure aprire la mappa delle aree protette dal pulsante in alto." : "Non riesco a rilevare la posizione in questo momento. Puoi aprire la mappa delle aree protette dal pulsante in alto.");
-    }
+    a.href = "rischio-oggi.html" + (info.lat != null ? `?lat=${info.lat.toFixed(5)}&lon=${info.lon.toFixed(5)}` : "");
+    a.className = "fr-btn"; a.style.cssText = "display:inline-block;margin-top:10px;text-decoration:none";
+    a.textContent = "Apri la mappa del rischio";
+    fatto.appendChild(document.createElement("br")); fatto.appendChild(a);
   }
 
   const posBtn = document.getElementById("btn-posizione");
   if (posBtn) posBtn.addEventListener("click", usaPosizione);
 
-  window.FLAIR_SEGNALAZIONE = { avvia, usaPosizione, rispondiAree };
+  window.FLAIR_SEGNALAZIONE = { avvia, usaPosizione };
 })();

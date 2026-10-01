@@ -2,6 +2,10 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
+<script>
+  // Pagina riservata all'area Protezione Civile (accesso dimostrativo): senza sessione si va al login
+  try { if (!sessionStorage.getItem("flair_pc_session")) location.replace("login.html"); } catch (e) {}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aree protette · FLAIR</title>
 <meta name="description" content="Parchi, riserve e siti Natura 2000 della Puglia: scopri quali aree naturali protette ci sono vicino a te.">

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rischio incendi di oggi · FLAIR</title>
+<meta name="description" content="Il rischio incendi di oggi e di domani in Puglia, per zona, dal bollettino regionale della Protezione Civile.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --bg:#1a262c; --panel:#213039; --panel2:#22323b; --line:#36474f; --line2:#2a3a42;
+  --ink:#e8eef0; --muted:#a3b2b8; --faint:#8b9ca3; --accent:#e8834a; --link:#f0a36b;
+  --basso:#2fbf4a; --medio:#ffe11a; --moderato:#ffab00; --elevato:#f02a1d; --estremo:#ff3df0;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+a{color:var(--link)}
+button,input{font-family:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+header{height:72px;flex:none;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line2)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{display:block;width:auto;height:44px}
+.brand span{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;letter-spacing:.04em;color:#fff}
+.brand span b{color:var(--accent);font-weight:600}
+.back{height:40px;padding:0 16px;display:flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.back:hover{border-color:var(--accent);color:var(--ink)}
+
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:1fr 400px}
+#map{height:100%;min-height:320px;background:#0f181c}
+aside{border-left:1px solid var(--line2);overflow-y:auto;padding:22px 22px 28px;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:28px;letter-spacing:-.01em}
+h2{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+
+.days{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px}
+.days button{flex:1;height:38px;border:none;border-radius:999px;background:transparent;color:var(--muted);font-size:14px;font-weight:500;cursor:pointer}
+.days button[aria-pressed="true"]{background:var(--panel);color:var(--ink);font-weight:600;box-shadow:0 0 0 1px var(--line)}
+
+.mine{width:100%;height:48px;border:none;border-radius:999px;background:var(--accent);color:#1a262c;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.mine:disabled{opacity:.55;cursor:wait}
+.search{width:100%;height:42px;margin-top:10px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 12px;font-size:14px}
+.search::placeholder{color:var(--faint)}
+.msg{font-size:13.5px;color:#ffd8a8;line-height:1.45;margin-top:8px}
+
+.result{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.result .where{font-size:15px;font-weight:600}
+.result .where small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+.result .big{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.result p{margin:0;font-size:13.5px;line-height:1.5;color:#c9d4d8}
+.result .tip{color:var(--ink)}
+
+.lv{display:inline-block;font-weight:700;font-size:12px;letter-spacing:.05em;padding:3px 10px;border-radius:6px;color:#1a262c;white-space:nowrap}
+.lv.big{font-size:16px;padding:6px 14px}
+.lv-BASSO{background:var(--basso)}.lv-MEDIO{background:var(--medio)}.lv-MODERATO{background:var(--moderato)}.lv-ELEVATO{background:var(--elevato);color:#fff}.lv-ESTREMO{background:var(--estremo)}
+
+.legend{display:grid;grid-template-columns:auto 1fr;gap:8px 12px;font-size:13px;align-items:start}
+.legend .lv{text-align:center;margin-top:1px}
+.legend span:not(.lv){color:var(--muted);line-height:1.4}
+
+.table{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.table div{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:6px 4px;text-align:center;font-size:12px;color:var(--muted);cursor:pointer}
+.table div:hover{border-color:var(--accent)}
+.table div b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:4px}
+.table .lv{font-size:10.5px;padding:2px 6px}
+
+.src{font-size:12px;color:var(--faint);line-height:1.5;margin:0}
+footer{flex:none;height:40px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--faint);border-top:1px solid var(--line2)}
+
+.leaflet-container{font-family:inherit}
+.leaflet-tooltip.sect{background:transparent;border:0;box-shadow:none;color:#1a262c;font-weight:700;font-size:12px;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 2px #fff}
+.leaflet-tooltip.sect::before{display:none}
+.leaflet-tooltip{background:#1e2a2f;color:#f4f6f6;border:0;border-radius:8px}
+.me{width:16px;height:16px;border-radius:50%;background:#1a262c;border:3px solid #fff;box-shadow:0 0 0 6px rgba(26,38,44,.35)}
+
+@media (max-width:860px){
+  header{padding:0 16px}
+  .layout{grid-template-columns:1fr;grid-template-rows:55vh auto}
+  aside{border-left:0;border-top:1px solid var(--line2);padding:18px 16px 24px}
+  .back .lbl{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html" aria-label="FLAIR, torna alla home">
+    <img src="assets/logo_ulivo.png" alt="" width="31" height="44">
+    <span>FL<b>AI</b>R</span>
+  </a>
+  <a class="back" id="back-link" href="index.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+    <span class="lbl" id="back-lbl">Torna alla home</span>
+  </a>
+</header>
+<script>
+  try {
+    if (sessionStorage.getItem("flair_pc_session")) {
+      document.getElementById("back-link").href = "protezione-civile.html";
+      document.getElementById("back-lbl").textContent = "Torna all'area operativa";
+    }
+  } catch (e) {}
+</script>
+
+<div class="layout">
+  <div id="map" role="region" aria-label="Mappa del rischio incendi per zona"></div>
+
+  <aside>
+    <div>
+      <h1>Rischio incendi</h1>
+      <p class="lead">Il livello di pericolosità per zona, dal bollettino regionale di previsione incendi della Protezione Civile Puglia.</p>
+    </div>
+
+    <div class="days" role="group" aria-label="Giorno di previsione" id="days"></div>
+
+    <section aria-labelledby="h-mio">
+      <h2 id="h-mio">Il tuo comune</h2>
+      <button type="button" class="mine" id="mine">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        Usa la mia posizione
+      </button>
+      <input type="search" class="search" id="cerca" list="comuni" placeholder="Oppure scrivi il nome del comune" aria-label="Cerca un comune">
+      <datalist id="comuni"></datalist>
+      <div class="msg" id="msg" hidden></div>
+    </section>
+
+    <div class="result" id="result" hidden aria-live="polite"></div>
+
+    <section aria-labelledby="h-zone">
+      <h2 id="h-zone">Tutte le zone</h2>
+      <div class="table" id="tabella"></div>
+    </section>
+
+    <section aria-labelledby="h-leg">
+      <h2 id="h-leg">Cosa significa</h2>
+      <div class="legend" id="legenda"></div>
+    </section>
+
+    <p class="src" id="fonte">Caricamento del bollettino…</p>
+    <p class="src">Zone: zone omogenee del bollettino, ricostruite comune per comune. Per le decisioni fa fede il bollettino ufficiale sul sito della Protezione Civile Puglia.</p>
+  </aside>
+</div>
+
+<footer>In caso di emergenza chiama subito il 112.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(() => {
+  const FILE_SETTORI = "data/settori_aib.geojson", FILE_BOLL = "data/bollettino_incendi.json";
+  const FILE_COMUNI = "scripts/puglia_comuni.json", FILE_AIB = "data/comuni_settori_aib.csv";
+  const ORDINE = ["BASSO", "MEDIO", "MODERATO", "ELEVATO", "ESTREMO"];
+  const COL = { BASSO: "#2fbf4a", MEDIO: "#ffe11a", MODERATO: "#ffab00", ELEVATO: "#f02a1d", ESTREMO: "#ff3df0" };
+  const CONSIGLIO = {
+    BASSO: "Anche con rischio basso: niente fuochi vicino a boschi e sterpaglie.",
+    MEDIO: "Non accendere fuochi all'aperto vicino a vegetazione secca e non gettare mozziconi.",
+    MODERATO: "Evita qualsiasi fuoco all'aperto, anche barbecue e bruciature di residui.",
+    ELEVATO: "Nessun fuoco all'aperto. Fai attenzione a fumo e fiamme e segnalali subito al 112.",
+    ESTREMO: "Nessun fuoco all'aperto. Evita le zone boscate e segnala subito al 112 fumo o fiamme.",
+  };
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const lv = (l, big) => l ? `<span class="lv lv-${l}${big ? " big" : ""}">${l}</span>` : "—";
+  const p2 = n => String(n).padStart(2, "0");
+  const iso = d => `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(d.getDate())}`;
+  const fmt = s => new Date(s + "T12:00:00").toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
+  const etichetta = s => s === iso(new Date()) ? "Oggi" : s === iso(new Date(Date.now() + 864e5)) ? "Domani" : new Date(s + "T12:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short" });
+
+  let boll = null, giorno = null, settori = null, comuni = null, aib = {}, scelto = null, me = null, evid = null;
+
+  const map = L.map("map").setView([41.0, 16.6], 8);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}", { maxZoom: 16, attribution: "Tiles &copy; Esri · Bollettino: Protezione Civile Puglia" }).addTo(map);
+
+  // ---- punto nel comune ----
+  function inRing(x, y, r) { let c = false; for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const [xi, yi] = r[i], [xj, yj] = r[j]; if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c; } return c; }
+  function comuneIn(lat, lon) {
+    for (const f of comuni.features) {
+      const g = f.geometry, ps = g.type === "Polygon" ? [g.coordinates] : g.coordinates;
+      for (const p of ps) if (inRing(lon, lat, p[0]) && !p.slice(1).some(h => inRing(lon, lat, h))) return f;
+    }
+    return null;
+  }
+
+  // ---- disegno ----
+  const stile = f => {
+    const l = boll.previsioni[giorno][f.properties.settore];
+    const sel = scelto && scelto.settore === f.properties.settore;
+    return { color: sel ? "#1a262c" : "#ffffff", weight: sel ? 3 : 1.4, fillColor: COL[l] || "#9aa3a6", fillOpacity: .78 };
+  };
+  function disegna() {
+    settori.setStyle(stile);
+    settori.eachLayer(l => l.setTooltipContent(esc(l.feature.properties.settore)));
+    $("days").querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.g === giorno)));
+    const p = boll.previsioni[giorno];
+    $("tabella").innerHTML = Object.keys(p).sort().map(z => `<div data-z="${z}" role="button" tabindex="0" aria-label="Zona ${z}: ${p[z]}"><b>${z}</b>${lv(p[z])}</div>`).join("");
+    $("tabella").querySelectorAll("div").forEach(el => {
+      const go = () => settori.eachLayer(l => { if (l.feature.properties.settore === el.dataset.z) map.fitBounds(l.getBounds(), { padding: [30, 30] }); });
+      el.addEventListener("click", go); el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+    if (scelto) risultato();
+  }
+  function risultato() {
+    const l = boll.previsioni[giorno][scelto.settore];
+    const quando = etichetta(giorno) === "Oggi" ? "oggi" : etichetta(giorno) === "Domani" ? "domani" : "il " + fmt(giorno);
+    $("result").hidden = false;
+    $("result").innerHTML = `
+      <div class="where">${esc(scelto.comune)} (${esc(scelto.provincia)})<small>Zona ${esc(scelto.settore)} · ${esc(fmt(giorno))}</small></div>
+      <div class="big">Rischio ${esc(quando)}: ${lv(l, true)}</div>
+      <p>${esc(boll.scenari[l] || "")}</p>
+      <p class="tip">${esc(CONSIGLIO[l] || "")} Se vedi fumo o fiamme, chiama subito il 112.</p>`;
+  }
+  function scegli(f, lat, lon) {
+    const nome = f.properties.c, z = aib[nome];
+    if (!z) { mostraMsg(`Non trovo la zona del comune di ${nome}.`); return; }
+    scelto = { comune: nome, provincia: f.properties.p, settore: z };
+    $("msg").hidden = true;
+    if (evid) map.removeLayer(evid);
+    evid = L.geoJSON(f, { interactive: false, style: { color: "#1a262c", weight: 3, fill: false, dashArray: "4 3" } }).addTo(map);
+    if (lat != null) {
+      if (me) map.removeLayer(me);
+      me = L.marker([lat, lon], { icon: L.divIcon({ className: "", html: '<div class="me" aria-hidden="true"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }), keyboard: false }).addTo(map);
+    }
+    map.fitBounds(evid.getBounds(), { padding: [60, 60], maxZoom: 11 });
+    disegna();
+  }
+  const mostraMsg = t => { $("msg").hidden = false; $("msg").textContent = t; };
+
+  // ---- comandi ----
+  $("mine").addEventListener("click", () => {
+    if (!navigator.geolocation) { mostraMsg("Il browser non permette di leggere la posizione: scrivi il nome del tuo comune."); return; }
+    $("mine").disabled = true; mostraMsg("Cerco la tua posizione…");
+    navigator.geolocation.getCurrentPosition(p => {
+      $("mine").disabled = false;
+      const f = comuneIn(p.coords.latitude, p.coords.longitude);
+      if (!f) { mostraMsg("Sembri fuori dalla Puglia: FLAIR per ora copre solo il territorio pugliese."); return; }
+      scegli(f, p.coords.latitude, p.coords.longitude);
+    }, e => { $("mine").disabled = false; mostraMsg(e.code === 1 ? "Non ho il permesso di leggere la posizione: scrivi il nome del tuo comune." : "Posizione non disponibile: scrivi il nome del tuo comune."); },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+  const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/['’]/g, "").toLowerCase().trim();
+  $("cerca").addEventListener("change", () => {
+    const q = norm($("cerca").value); if (!q) return;
+    const f = comuni.features.find(x => norm(x.properties.c) === q) || comuni.features.find(x => norm(x.properties.c).startsWith(q));
+    if (f) { scegli(f); $("cerca").value = f.properties.c; } else mostraMsg("Comune non trovato in Puglia.");
+  });
+
+  // ---- caricamento ----
+  Promise.all([
+    fetch(FILE_BOLL, { cache: "no-store" }).then(r => r.ok ? r.json() : null),
+    fetch(FILE_SETTORI).then(r => r.ok ? r.json() : null),
+    fetch(FILE_COMUNI).then(r => r.ok ? r.json() : null),
+    fetch(FILE_AIB).then(r => r.ok ? r.text() : ""),
+  ].map(p => p.catch(() => null))).then(([b, gs, gc, csv]) => {
+    if (!b || !gs) { $("fonte").textContent = "Bollettino non disponibile in questo momento."; return; }
+    boll = b; comuni = gc;
+    (csv || "").replace(/^﻿/, "").trim().split(/\r?\n/).slice(1).forEach(r => { const c = r.split(","); aib[c[1]] = c[4]; });
+    if (comuni) $("comuni").innerHTML = comuni.features.map(f => f.properties.c).sort((a, b) => a.localeCompare(b, "it")).map(n => `<option value="${esc(n)}">`).join("");
+    else { $("cerca").disabled = true; $("mine").disabled = true; }
+
+    const oggi = iso(new Date()), giorni = Object.keys(boll.previsioni).sort();
+    const vis = giorni.filter(g => g >= oggi).length ? giorni.filter(g => g >= oggi) : giorni.slice(-1);
+    $("days").innerHTML = vis.map(g => `<button type="button" data-g="${g}" aria-pressed="false">${esc(etichetta(g))}<span style="opacity:.7;font-weight:400"> · ${esc(new Date(g + "T12:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short" }))}</span></button>`).join("");
+    $("days").querySelectorAll("button").forEach(b => b.addEventListener("click", () => { giorno = b.dataset.g; disegna(); }));
+    $("legenda").innerHTML = ORDINE.map(l => `${lv(l)}<span>${esc(boll.scenari[l])}</span>`).join("");
+    $("fonte").textContent = `Fonte: bollettino regionale di previsione incendi del ${new Date(boll.emissione + "T12:00:00").toLocaleDateString("it-IT")} (prot. ${boll.protocollo}), Protezione Civile Puglia – Centro Funzionale Decentrato.` +
+      (vis[0] !== oggi ? " Il bollettino di oggi non è ancora disponibile: viene mostrata l'ultima previsione." : "");
+
+    giorno = vis[0];
+    settori = L.geoJSON(gs, {
+      style: stile,
+      onEachFeature: (f, layer) => {
+        layer.bindTooltip(esc(f.properties.settore), { permanent: true, direction: "center", className: "sect" });
+        layer.on("click", e => { const c = comuni && comuneIn(e.latlng.lat, e.latlng.lng); if (c) scegli(c); });
+      },
+    }).addTo(map);
+    map.fitBounds(settori.getBounds(), { padding: [10, 10] });
+    disegna();
+
+    const u = new URLSearchParams(location.search), lat = parseFloat(u.get("lat")), lon = parseFloat(u.get("lon"));
+    if (comuni && isFinite(lat) && isFinite(lon)) { const f = comuneIn(lat, lon); if (f) scegli(f, lat, lon); }
+  });
+})();
+</script>
+</body>
+</html>
