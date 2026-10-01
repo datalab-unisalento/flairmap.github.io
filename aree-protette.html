@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aree protette · FLAIR</title>
+<meta name="description" content="Parchi, riserve e siti Natura 2000 della Puglia: scopri quali aree naturali protette ci sono vicino a te.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --bg:#1a262c; --panel:#213039; --panel2:#22323b; --line:#36474f; --line2:#2a3a42;
+  --ink:#e8eef0; --muted:#a3b2b8; --faint:#8b9ca3; --accent:#e8834a; --link:#f0a36b;
+  --parco:#4caf6e; --n2000:#3fb5c9;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+a{color:var(--link)}
+button,input{font-family:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+header{height:72px;flex:none;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line2)}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{display:block;width:auto;height:44px}
+.brand span{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;letter-spacing:.04em;color:#fff}
+.brand span b{color:var(--accent);font-weight:600}
+.back{height:40px;padding:0 16px;display:flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.back:hover{border-color:var(--accent);color:var(--ink)}
+
+.layout{flex:1;min-height:0;display:grid;grid-template-columns:1fr 400px}
+#map{height:100%;min-height:320px;background:#0f181c}
+aside{border-left:1px solid var(--line2);overflow-y:auto;padding:22px 22px 28px;display:flex;flex-direction:column;gap:20px}
+h1{margin:0;font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:28px;letter-spacing:-.01em}
+h2{margin:0 0 10px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14px;line-height:1.5}
+
+.near{width:100%;height:48px;border:none;border-radius:999px;background:var(--accent);color:#1a262c;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.near:disabled{opacity:.55;cursor:wait}
+.msg{font-size:13.5px;color:var(--muted);line-height:1.45;margin-top:8px}
+.msg.warn{color:#ffd8a8}
+
+.layers{display:flex;flex-direction:column;gap:8px}
+.layers label{display:flex;align-items:flex-start;gap:10px;font-size:14px;cursor:pointer;line-height:1.4}
+.layers input{width:18px;height:18px;margin-top:1px;accent-color:var(--accent);flex:none}
+.sw{width:14px;height:14px;border-radius:4px;flex:none;margin-top:3px}
+.layers small{display:block;color:var(--faint);font-size:12.5px}
+
+.search{width:100%;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:0 12px;font-size:14px}
+.search::placeholder{color:var(--faint)}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:4px 14px}
+.item{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line2);cursor:pointer}
+.item:first-child{border-top:0}
+.item:hover .item-t,.item:focus-visible .item-t{color:var(--link)}
+.item-t{font-weight:600;font-size:14.5px}
+.item-s{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+.dist{margin-left:auto;font-size:12.5px;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;padding-top:2px}
+.empty{color:var(--muted);font-size:14px;padding:12px 0}
+.tip{padding:12px 14px;border-radius:12px;background:#24333a;font-size:13.5px;line-height:1.5;color:#c9d4d8}
+.tip b{color:var(--ink)}
+.src{font-size:12px;color:var(--faint);line-height:1.5}
+
+footer{flex:none;height:40px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--faint);border-top:1px solid var(--line2)}
+
+.leaflet-container{font-family:inherit}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#1e2a2f;color:#f4f6f6}
+.leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.45;min-width:220px}
+.leaflet-container a.leaflet-popup-close-button{color:#f4f6f6}
+.pop-n{font-size:12px;color:#98a8ae;margin-top:6px}
+.me{width:16px;height:16px;border-radius:50%;background:#e8834a;border:3px solid #fff;box-shadow:0 0 0 6px rgba(232,131,74,.3)}
+
+@media (max-width:860px){
+  header{padding:0 16px}
+  .layout{grid-template-columns:1fr;grid-template-rows:55vh auto}
+  aside{border-left:0;border-top:1px solid var(--line2);padding:18px 16px 24px}
+  .back .lbl{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html" aria-label="FLAIR, torna alla home">
+    <img src="assets/logo_ulivo.png" alt="" width="31" height="44">
+    <span>FL<b>AI</b>R</span>
+  </a>
+  <a class="back" id="back-link" href="index.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+    <span class="lbl" id="back-lbl">Torna alla home</span>
+  </a>
+</header>
+<script>
+  try {
+    if (sessionStorage.getItem("flair_pc_session")) {
+      document.getElementById("back-link").href = "protezione-civile.html";
+      document.getElementById("back-lbl").textContent = "Torna all'area operativa";
+    }
+  } catch (e) {}
+</script>
+
+<div class="layout">
+  <div id="map" role="region" aria-label="Mappa delle aree naturali protette della Puglia"></div>
+
+  <aside>
+    <div>
+      <h1>Aree protette</h1>
+      <p class="lead">Parchi, riserve e siti della rete europea Natura 2000. Sono i luoghi di maggior valore naturale della Puglia: proteggerli dagli incendi è la prima forma di prevenzione.</p>
+    </div>
+
+    <section aria-labelledby="h-vicino">
+      <h2 id="h-vicino">Vicino a te</h2>
+      <button type="button" class="near" id="near">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+        Mostra le aree protette vicino a me
+      </button>
+      <div class="msg" id="near-msg" hidden></div>
+    </section>
+
+    <section aria-labelledby="h-livelli">
+      <h2 id="h-livelli">Livelli</h2>
+      <div class="layers">
+        <label><input type="checkbox" id="lay-parchi" checked><i class="sw" style="background:var(--parco)"></i><span>Parchi e riserve<small>Parchi nazionali e regionali, riserve naturali</small></span></label>
+        <label><input type="checkbox" id="lay-n2000" checked><i class="sw" style="background:transparent;border:2px dashed var(--n2000)"></i><span>Rete Natura 2000<small>Aree tutelate dall'Unione Europea (ZSC e ZPS)</small></span></label>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-elenco">
+      <h2 id="h-elenco"><span id="elenco-titolo">Tutte le aree</span> <span id="n-vis"></span></h2>
+      <input type="search" class="search" id="cerca" placeholder="Cerca per nome (es. Porto Selvaggio)" aria-label="Cerca un'area protetta per nome">
+      <div class="card" style="margin-top:10px"><div id="lista"><div class="empty">Caricamento…</div></div></div>
+    </section>
+
+    <div class="tip"><b>Nelle aree protette:</b> non accendere fuochi, non gettare mozziconi, e se vedi fumo o fiamme <b>chiama subito il 112</b>.</div>
+
+    <p class="src">Fonte: Regione Puglia, open data «Parchi, aree naturali protette, siti di importanza rilevante» (revisione novembre 2022), licenza IODL 2.0. Escluse le aree solo marine (riserve marine, praterie di posidonia). Confini semplificati per la visualizzazione: per usi ufficiali fanno fede i dati originali.</p>
+  </aside>
+</div>
+
+<footer>In caso di emergenza chiama subito il 112.</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(() => {
+  const FILES = { parchi: "data/aree_protette_parchi.geojson", n2000: "data/aree_protette_natura2000.geojson" };
+  const COL = { parchi: "#4caf6e", n2000: "#3fb5c9" };
+  const RAGGIO_KM = 15;
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const fmtHa = n => Number(n).toLocaleString("it-IT") + " ettari";
+
+  // ---- geometria: punto dentro poligono e distanza punto-poligono (km) ----
+  const KM_LAT = 111.32;
+  function inRing(x, y, ring) {
+    let inside = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i], [xj, yj] = ring[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) inside = !inside;
+    }
+    return inside;
+  }
+  function polys(g) { return g.type === "Polygon" ? [g.coordinates] : g.type === "MultiPolygon" ? g.coordinates : []; }
+  function distanzaKm(lat, lon, geom) {
+    const kx = KM_LAT * Math.cos(lat * Math.PI / 180);
+    let best = Infinity;
+    for (const p of polys(geom)) {
+      if (inRing(lon, lat, p[0]) && !p.slice(1).some(h => inRing(lon, lat, h))) return 0;
+      for (const ring of p) for (let i = 1; i < ring.length; i++) {
+        const ax = (ring[i-1][0] - lon) * kx, ay = (ring[i-1][1] - lat) * KM_LAT;
+        const bx = (ring[i][0] - lon) * kx,   by = (ring[i][1] - lat) * KM_LAT;
+        const dx = bx - ax, dy = by - ay, l2 = dx*dx + dy*dy;
+        let t = l2 ? -(ax*dx + ay*dy) / l2 : 0; t = Math.max(0, Math.min(1, t));
+        const px = ax + t*dx, py = ay + t*dy, d = Math.hypot(px, py);
+        if (d < best) best = d;
+      }
+    }
+    return best;
+  }
+
+  // ---- mappa ----
+  const map = L.map("map").setView([41.0, 16.6], 8);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { maxZoom: 18, attribution: "Tiles &copy; Esri · Aree protette: Regione Puglia (IODL 2.0)" }).addTo(map);
+  L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}", { maxZoom: 18, opacity: .85 }).addTo(map);
+
+  const aree = [];            // { f, gruppo, layer, d }
+  const livelli = {};
+  let me = null, posizione = null;
+
+  const popup = a => `<strong>${esc(a.f.properties.nome)}</strong><br>${esc(a.f.properties.tipo)}${a.gruppo === "n2000" ? " · Rete Natura 2000" : ""}<br>${fmtHa(a.f.properties.ettari)}` +
+    (a.d != null ? `<br>${a.d === 0 ? "<b>Sei dentro quest'area</b>" : `A ${a.d < 1 ? "meno di 1" : a.d.toFixed(1).replace(".", ",")} km da te`}` : "") +
+    `<div class="pop-n">Codice ${esc(a.f.properties.codice)} · Niente fuochi; se vedi fumo chiama il 112.</div>`;
+
+  function crea(gruppo, gj) {
+    const stile = gruppo === "parchi"
+      ? { color: COL.parchi, weight: 1.5, fillColor: COL.parchi, fillOpacity: .28 }
+      : { color: COL.n2000, weight: 1.6, dashArray: "5 4", fillColor: COL.n2000, fillOpacity: .08 };
+    livelli[gruppo] = L.geoJSON(gj, {
+      style: () => stile,
+      onEachFeature: (f, layer) => {
+        const a = { f, gruppo, layer, d: null };
+        aree.push(a);
+        layer.bindPopup(() => popup(a));
+        layer.on("mouseover", () => layer.setStyle({ weight: 3 }));
+        layer.on("mouseout", () => layer.setStyle({ weight: stile.weight }));
+      },
+    }).addTo(map);
+  }
+
+  // ---- elenco ----
+  function visibili() {
+    return aree.filter(a => $(a.gruppo === "parchi" ? "lay-parchi" : "lay-n2000").checked);
+  }
+  function renderLista() {
+    const q = $("cerca").value.trim().toLowerCase();
+    let lista = visibili().filter(a => !q || a.f.properties.nome.toLowerCase().includes(q));
+    if (posizione) lista = lista.filter(a => a.d <= RAGGIO_KM || q).sort((x, y) => x.d - y.d);
+    else lista.sort((x, y) => (x.gruppo === y.gruppo ? 0 : x.gruppo === "parchi" ? -1 : 1) || x.f.properties.nome.localeCompare(y.f.properties.nome, "it"));
+    $("n-vis").textContent = `(${lista.length})`;
+    $("lista").innerHTML = lista.length ? lista.map((a, i) => `
+      <div class="item" data-i="${aree.indexOf(a)}" tabindex="0" role="button" aria-label="Mostra ${esc(a.f.properties.nome)} sulla mappa">
+        <i class="sw" style="${a.gruppo === "parchi" ? `background:${COL.parchi}` : `border:2px dashed ${COL.n2000}`}"></i>
+        <div><div class="item-t">${esc(a.f.properties.nome)}</div><div class="item-s">${esc(a.f.properties.tipo)} · ${fmtHa(a.f.properties.ettari)}</div></div>
+        ${posizione && a.d != null ? `<span class="dist">${a.d === 0 ? "sei qui" : a.d < 1 ? "&lt; 1 km" : a.d.toFixed(1).replace(".", ",") + " km"}</span>` : ""}
+      </div>`).join("")
+      : `<div class="empty">${posizione ? `Nessuna area protetta entro ${RAGGIO_KM} km.` : "Nessuna area trovata."}</div>`;
+    $("lista").querySelectorAll(".item").forEach(el => {
+      const a = aree[+el.dataset.i];
+      const go = () => { map.fitBounds(a.layer.getBounds(), { padding: [30, 30], maxZoom: 13 }); a.layer.openPopup(a.layer.getBounds().getCenter()); };
+      el.addEventListener("click", go);
+      el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    });
+  }
+  ["lay-parchi", "lay-n2000"].forEach(id => $(id).addEventListener("change", () => {
+    const g = id === "lay-parchi" ? "parchi" : "n2000";
+    if (livelli[g]) $(id).checked ? livelli[g].addTo(map) : map.removeLayer(livelli[g]);
+    renderLista();
+  }));
+  $("cerca").addEventListener("input", renderLista);
+
+  // ---- vicino a me ----
+  function mostraVicino(lat, lon, accuratezza) {
+    posizione = { lat, lon };
+    aree.forEach(a => a.d = distanzaKm(lat, lon, a.f.geometry));
+    if (me) map.removeLayer(me);
+    me = L.marker([lat, lon], { icon: L.divIcon({ className: "", html: '<div class="me" aria-hidden="true"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }), title: "La tua posizione", keyboard: false }).addTo(map);
+    const vicine = aree.filter(a => a.d <= RAGGIO_KM).sort((x, y) => x.d - y.d);
+    $("elenco-titolo").textContent = `Entro ${RAGGIO_KM} km da te`;
+    const m = $("near-msg"); m.hidden = false; m.className = "msg";
+    const dentro = vicine.filter(a => a.d === 0);
+    m.textContent = dentro.length
+      ? `Sei dentro: ${dentro.map(a => a.f.properties.nome).join(", ")}.`
+      : vicine.length ? `L'area protetta più vicina è «${vicine[0].f.properties.nome}», a ${vicine[0].d < 1 ? "meno di 1" : vicine[0].d.toFixed(1).replace(".", ",")} km.`
+      : `Non ci sono aree protette entro ${RAGGIO_KM} km.`;
+    if (accuratezza > 1000) m.textContent += ` Posizione approssimativa (circa ${Math.round(accuratezza / 1000)} km).`;
+    const b = L.latLngBounds([[lat, lon]]); vicine.slice(0, 3).forEach(a => b.extend(a.layer.getBounds()));
+    map.fitBounds(b.pad(0.15), { maxZoom: 13 });
+    renderLista();
+  }
+  $("near").addEventListener("click", () => {
+    const m = $("near-msg");
+    if (!navigator.geolocation) { m.hidden = false; m.className = "msg warn"; m.textContent = "Il browser non permette di leggere la posizione."; return; }
+    $("near").disabled = true; m.hidden = false; m.className = "msg"; m.textContent = "Cerco la tua posizione…";
+    navigator.geolocation.getCurrentPosition(
+      p => { $("near").disabled = false; mostraVicino(p.coords.latitude, p.coords.longitude, p.coords.accuracy); },
+      e => { $("near").disabled = false; m.className = "msg warn"; m.textContent = e.code === 1 ? "Non ho il permesso di leggere la posizione: attivalo dalle impostazioni del browser." : "Posizione non disponibile in questo momento. Riprova tra poco."; },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+
+  // ---- caricamento ----
+  Promise.all(Object.entries(FILES).map(([g, f]) => fetch(f).then(r => r.ok ? r.json() : null).then(gj => [g, gj]).catch(() => [g, null])))
+    .then(res => {
+      res.sort((a, b) => a[0] === "n2000" ? -1 : 1).forEach(([g, gj]) => { if (gj) crea(g, gj); });   // Natura 2000 sotto, parchi sopra
+      if (!aree.length) { $("lista").innerHTML = '<div class="empty">Non riesco a caricare le aree protette.</div>'; return; }
+      // posizione passata dalla chat: ?lat=..&lon=..
+      const u = new URLSearchParams(location.search), lat = parseFloat(u.get("lat")), lon = parseFloat(u.get("lon"));
+      if (isFinite(lat) && isFinite(lon)) mostraVicino(lat, lon, 0); else renderLista();
+    });
+})();
+</script>
+</body>
+</html>
