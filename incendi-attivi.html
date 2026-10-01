@@ -97,7 +97,6 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
   // Operatore Protezione Civile loggato: i link di ritorno portano alla sua area
   try {
     if (sessionStorage.getItem("flair_pc_session")) {
-      document.getElementById("home-link").href = "protezione-civile.html";
       document.getElementById("back-link").href = "protezione-civile.html";
       document.getElementById("back-lbl").textContent = "Torna all'area operativa";
     }
