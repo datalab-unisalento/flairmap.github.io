@@ -212,7 +212,7 @@ footer{min-height:48px;padding:8px 16px;display:flex;align-items:center;justify-
     "\nOrdinali per priorità di intervento considerando il valore ambientale e il tipo di vegetazione (bosco o pineta rispetto a pascolo, stoppie o sterpaglia)," +
     " vento e possibile propagazione, storico della zona e vicinanza a case o zone frequentate. Indica dove mandare prima le squadre, dove basta il monitoraggio e perché.";
 
-  const sim = { id:"SIM-001", lat:"41.819000", lon:"15.987000", comune:"Monte Sant'Angelo", provincia:"FG", settore_aib:"FG_01", codice_colore:"ARANCIONE",
+  const sim = { id:"SIM-001", lat:"41.819000", lon:"15.987000", comune:"Monte Sant'Angelo", provincia:"FG", settore_aib:"FG_03", codice_colore:"ARANCIONE",
     note:"Fumo denso visibile dalla strada, fiamme su macchia mediterranea in espansione verso il bosco. Vento moderato da nord-ovest. Nessuna abitazione coinvolta al momento." };
   const imposta = (segnalata, tutti) => {
     $("sugg-segnalazione").dataset.prompt = promptSegnalazione(segnalata);

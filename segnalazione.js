@@ -17,7 +17,26 @@
   if (!form || !input || !log) return;
 
   const FILE_COMUNI = "scripts/puglia_comuni.json";
-  const FILE_AIB = "datasets%20estratti/tutti_comuni_puglia_settori_aib.csv";
+  // Corrispondenza comuni → zone omogenee AIB come nel bollettino regionale (16 settori)
+  const FILE_AIB = "data/comuni_settori_aib.csv";
+  const FILE_BOLL = "data/bollettino_incendi.json";
+  const ORDINE_LIV = ["BASSO", "MEDIO", "MODERATO", "ELEVATO", "ESTREMO"];
+  let boll = null;
+  function caricaBoll() {
+    if (caricaBoll.p) return caricaBoll.p;
+    caricaBoll.p = fetch(FILE_BOLL, { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null).then(b => (boll = b));
+    return caricaBoll.p;
+  }
+  // livello del settore per oggi (o, se manca, per l'ultimo giorno disponibile); restituisce {livello, giorno, oggi}
+  function rischio(settore) {
+    if (!boll || !settore) return null;
+    const d = new Date(), p = n => String(n).padStart(2, "0"), oggi = `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    const giorni = Object.keys(boll.previsioni).sort();
+    const g = giorni.includes(oggi) ? oggi : giorni[giorni.length - 1];
+    const livello = boll.previsioni[g][settore];
+    return livello ? { livello, giorno: g, oggi: g === oggi } : null;
+  }
+  const dataIt = iso => new Date(iso + "T12:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "long" });
   const LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
   const LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
   const ZOOM_MIN_PRECISO = 14;
@@ -425,14 +444,17 @@
       if (!comuni) { await say("Non riesco a caricare i confini dei comuni. Scrivi il nome del tuo comune."); return; }
       if (!info) { await say("Sembri fuori dalla Puglia: FLAIR per ora copre solo il territorio pugliese."); return; }
       const appross = p.coords.accuracy > 1000 ? ` (posizione approssimativa, circa ${Math.round(p.coords.accuracy / 1000)} km)` : "";
-      await say(`Ti trovo a ${info.comune} (${info.provincia})${info.settore ? ` · settore AIB ${info.settore}` : ""}${appross}.\nCosa vuoi fare?`);
+      await caricaBoll();
+      const rk = rischio(info.settore);
+      await say(`Ti trovo a ${info.comune} (${info.provincia})${info.settore ? ` · settore AIB ${info.settore}` : ""}${appross}.` +
+        (rk ? `\nRischio incendi ${rk.oggi ? "oggi" : "il " + dataIt(rk.giorno)}: ${rk.livello}.` : "") + `\nCosa vuoi fare?`);
       const scelta = await choose([
         { value: "rischio", label: `Rischio incendi oggi a ${info.comune}`, primary: true },
         { value: "vicini", label: "Ci sono incendi vicino a me?" },
         { value: "aree", label: "Aree protette vicino a me" },
         { value: "segnala", label: "Segnala qui erba alta o sterpaglie" },
       ]);
-      if (scelta.value === "rischio") chiedi(`Qual è il rischio incendi oggi a ${info.comune}?`);
+      if (scelta.value === "rischio") { bubble(scelta.label, "me"); await rispondiRischio(info); }
       else if (scelta.value === "vicini") chiedi(`Ci sono incendi in corso vicino a ${info.comune}?`);
       else if (scelta.value === "aree") { bubble(scelta.label, "me"); await rispondiAree(pos); }
       else avvia(scelta.label, pos);
@@ -445,6 +467,19 @@
       if (btn) { btn.disabled = false; btn.removeAttribute("aria-busy"); }
     }
   }
+  // ---------------------------------------------------------------- rischio dal bollettino regionale
+  async function rispondiRischio(info) {
+    await caricaBoll();
+    const rk = rischio(info.settore);
+    if (!rk) { await say(`Non ho il bollettino per il settore di ${info.comune}. Puoi consultarlo sul sito della Protezione Civile Puglia.`); return; }
+    const em = new Date(boll.emissione + "T12:00:00").toLocaleDateString("it-IT");
+    await say(`${rk.oggi ? "Oggi" : "Il " + dataIt(rk.giorno)} a ${info.comune} (settore ${info.settore}) il rischio incendi è ${rk.livello}.\n` +
+      `${boll.scenari[rk.livello]}\n\n` +
+      (ORDINE_LIV.indexOf(rk.livello) >= 2 ? "Evita qualsiasi fuoco all'aperto e segnala subito fumo o fiamme al 112.\n" : "Niente fuochi vicino a boschi e sterpaglie; se vedi fumo chiama il 112.\n") +
+      `Fonte: bollettino regionale di previsione incendi del ${em}, Protezione Civile Puglia.` +
+      (rk.oggi ? "" : "\nAttenzione: non ho ancora il bollettino di oggi, questo è l'ultimo disponibile."));
+  }
+
   // ---------------------------------------------------------------- aree protette vicine
   // Dati: Regione Puglia, "Parchi, aree naturali protette, siti di importanza rilevante" (rev. 11/2022, IODL 2.0)
   const FILE_AREE = ["data/aree_protette_parchi.geojson", "data/aree_protette_natura2000.geojson"];
@@ -474,7 +509,7 @@
   }
   const km = d => d === 0 ? "ci sei dentro" : d < 1 ? "a meno di 1 km" : `a ${d.toFixed(1).replace(".", ",")} km`;
   async function rispondiAree(pos) {
-    await caricaAree();
+    await Promise.all([caricaAree(), caricaBoll()]);
     if (!aree.length) { await say("Non riesco a caricare le aree protette in questo momento."); return; }
     const vicine = aree.map(a => ({ ...a, d: distanzaKm(pos.lat, pos.lon, a.geom) }))
       .filter(a => a.d <= 15).sort((x, y) => x.d - y.d);
@@ -483,7 +518,8 @@
     if (!elenco.length) box.appendChild(document.createTextNode("Non ci sono aree protette entro 15 km da te."));
     else {
       box.appendChild(document.createTextNode("Le aree protette più vicine a te:\n" +
-        elenco.map(a => `• ${a.nome} — ${a.n2000 ? "Natura 2000" : a.tipo}, ${km(a.d)}`).join("\n") +
+        elenco.map(a => { const lv = (a.settori || []).map(z => rischio(z)).filter(Boolean).map(x => x.livello).sort((x, y) => ORDINE_LIV.indexOf(y) - ORDINE_LIV.indexOf(x))[0];
+          return `• ${a.nome} — ${a.n2000 ? "Natura 2000" : a.tipo}, ${km(a.d)}${lv ? ` · rischio ${lv}` : ""}`; }).join("\n") +
         "\n\nSono i luoghi di maggior valore naturale: niente fuochi, e se vedi fumo chiama subito il 112.\n"));
     }
     const a = document.createElement("a");

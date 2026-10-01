@@ -1,0 +1,58 @@
+{
+ "fonte": "Regione Puglia, Protezione Civile – Centro Funzionale Decentrato: Bollettino regionale di previsione incendi",
+ "protocollo": "0572669/2026",
+ "emissione": "2026-09-30",
+ "file": "20260930_102_BollettinoIncendi_789.pdf",
+ "livelli": [
+  "BASSO",
+  "MEDIO",
+  "MODERATO",
+  "ELEVATO",
+  "ESTREMO"
+ ],
+ "previsioni": {
+  "2026-10-01": {
+   "BAT": "MEDIO",
+   "BA_01": "BASSO",
+   "BA_02": "MEDIO",
+   "BA_03": "MEDIO",
+   "BR_01": "MEDIO",
+   "BR_02": "BASSO",
+   "FG_01": "MEDIO",
+   "FG_02": "MEDIO",
+   "FG_03": "MEDIO",
+   "FG_04": "MEDIO",
+   "LE_01": "MEDIO",
+   "LE_02": "MEDIO",
+   "LE_03": "MEDIO",
+   "TA_01": "MEDIO",
+   "TA_02": "MODERATO",
+   "TA_03": "MEDIO"
+  },
+  "2026-10-02": {
+   "BAT": "BASSO",
+   "BA_01": "BASSO",
+   "BA_02": "MEDIO",
+   "BA_03": "MEDIO",
+   "BR_01": "MEDIO",
+   "BR_02": "BASSO",
+   "FG_01": "MEDIO",
+   "FG_02": "MEDIO",
+   "FG_03": "MEDIO",
+   "FG_04": "MEDIO",
+   "LE_01": "MEDIO",
+   "LE_02": "BASSO",
+   "LE_03": "MEDIO",
+   "TA_01": "MEDIO",
+   "TA_02": "MODERATO",
+   "TA_03": "MEDIO"
+  }
+ },
+ "scenari": {
+  "BASSO": "A innesco avvenuto, il fronte di fiamma avrà basse probabilità di propagazione.",
+  "MEDIO": "A fronte di un innesco, gli incendi potrebbero propagarsi con valori di intensità di fiamma e velocità di propagazione ordinari.",
+  "MODERATO": "Da queste condizioni, e per livelli di pericolosità superiori, l'incendio potrebbe risultare di difficile controllo.",
+  "ELEVATO": "A seguito di un innesco, il fronte di fiamma si potrebbe diffondere molto rapidamente e la sua estinzione risulterebbe difficile.",
+  "ESTREMO": "A seguito di un innesco potrebbero verificarsi incendi caratterizzati da una violenta propagazione e la cui estinzione diventerebbe molto impegnativa."
+ }
+}
