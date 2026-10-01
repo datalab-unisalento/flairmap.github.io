@@ -1,0 +1,66 @@
+services:
+  #Qui c'è resources limit, logging e network bridged
+  flair-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+      - "5679:5679"  #  porta debug
+    environment:
+      - MCP_TRANSPORT=${MCP_TRANSPORT}
+      - MCP_LOG_LEVEL=info
+      - API_KEY=${API_KEY}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import socket; s=socket.create_connection(('localhost',8000),2); s.close()\""]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - cache-data:/app/data/cache
+      - log-data:/app/log
+    networks:
+      - mcp-network
+
+  selenium-flair:
+    image: selenium/standalone-chromium:latest
+    shm_size: 2gb
+    ports:
+      - "4445:4444"  # API Selenium
+      - "7901:7900"  # VNC per debug
+    environment:
+      - SE_NODE_MAX_SESSIONS=5
+      - SE_NODE_SESSION_TIMEOUT=300
+    volumes:
+      - downloads:/home/seluser/Downloads
+    networks:
+      - mcp-network
+    restart: unless-stopped
+
+networks:
+  mcp-network:
+    external: true
+
+volumes:
+  cache-data:
+    driver: local
+  log-data:
+    driver: local
+  downloads:
