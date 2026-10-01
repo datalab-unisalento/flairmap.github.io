@@ -287,7 +287,7 @@
       bubble(emergenza.label, "me");
       if (emergenza.value === "si") {
         const n = document.createElement("div");
-        n.appendChild(document.createTextNode("Allora non segnalare qui: chiama subito il 112. È il numero unico di emergenza e la chiamata arriva prima a chi interviene."));
+        n.appendChild(document.createTextNode("Allora non segnalare qui: chiama subito il 112."));
         n.appendChild(document.createElement("br"));
         const a = document.createElement("a"); a.href = "tel:112"; a.className = "fr-112"; a.textContent = "Chiama il 112";
         n.appendChild(a);

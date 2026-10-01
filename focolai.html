@@ -2,6 +2,10 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
+<script>
+  // Pagina riservata all'area Protezione Civile (accesso dimostrativo): senza sessione si va al login
+  try { if (!sessionStorage.getItem("flair_pc_session")) location.replace("login.html"); } catch (e) {}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Anomalie termiche in Puglia</title>
 <meta name="description" content="Punti di calore rilevati dai satelliti NASA FIRMS sul territorio della Regione Puglia, aggiornati in tempo quasi reale.">
@@ -115,7 +119,7 @@ main.demo-on .avviso{top:48px}
   <header>
     <h1>Anomalie termiche in Puglia</h1>
     <p class="sub">Punti di calore rilevati dai satelliti NASA (VIIRS e MODIS) sul territorio regionale. I dati compaiono sulla mappa con un ritardo di circa 3 ore rispetto al passaggio del satellite.</p>
-    <nav><a href="index.html">Home FLAIR</a> · <a href="storico.html">Vai allo storico degli incendi 2017–2024</a></nav>
+    <nav><a href="protezione-civile.html">Torna all'area operativa</a> · <a href="storico.html">Vai allo storico degli incendi 2017–2024</a></nav>
   </header>
 
   <section aria-live="polite">
@@ -180,7 +184,7 @@ main.demo-on .avviso{top:48px}
     <p class="msg" id="msgChiave"></p>
   </details>
 
-  <p class="note">Dati: NASA FIRMS, prodotti VIIRS 375 m e MODIS 1 km in tempo quasi reale. Un punto di calore non è sempre un incendio boschivo: può essere una bruciatura agricola, un impianto industriale o un falso allarme. I satelliti passano sulla Puglia solo alcune volte al giorno, quindi un incendio può non comparire per ore. Non sostituisce le segnalazioni al 112 o al 1515. Immagini: Esri World Imagery.</p>
+  <p class="note">Dati: NASA FIRMS, prodotti VIIRS 375 m e MODIS 1 km in tempo quasi reale. Un punto di calore non è sempre un incendio boschivo: può essere una bruciatura agricola, un impianto industriale o un falso allarme. I satelliti passano sulla Puglia solo alcune volte al giorno, quindi un incendio può non comparire per ore. Non sostituisce le segnalazioni al 112. Immagini: Esri World Imagery.</p>
   <button class="tema" id="tema" type="button">Tema scuro</button>
 </aside>
 <main>

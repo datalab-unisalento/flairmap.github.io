@@ -141,7 +141,11 @@ main.satmode .tip.on{pointer-events:auto;visibility:visible}
   <div>
     <h1>Incendi boschivi in Puglia, 2017–2024</h1>
     <p class="sub">Ogni punto è un incendio. Passa sopra un punto per il meteo di quel giorno.</p>
-    <nav class="nav"><a href="index.html">Home FLAIR</a> · <a href="focolai.html">Vai alle anomalie termiche di oggi (NASA FIRMS)</a></nav>
+    <nav class="nav"><a href="index.html" id="nav-home">Home FLAIR</a><span id="nav-foc" hidden> · <a href="focolai.html">Vai alle anomalie termiche di oggi (NASA FIRMS)</a></span></nav>
+    <script>
+      // Le anomalie termiche sono riservate all'area Protezione Civile
+      try { if (sessionStorage.getItem("flair_pc_session")) { document.getElementById("nav-foc").hidden = false; const h = document.getElementById("nav-home"); h.href = "protezione-civile.html"; h.textContent = "Area operativa"; } } catch (e) {}
+    </script>
   </div>
   <p class="count" aria-live="polite"><span id="n">0</span><small>incendi mostrati</small></p>
 
