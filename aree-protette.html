@@ -120,7 +120,7 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
       <p class="lead">Parchi, riserve e siti della rete europea Natura 2000. Sono i luoghi di maggior valore naturale della Puglia: proteggerli dagli incendi è la prima forma di prevenzione.</p>
     </div>
 
-    <section aria-labelledby="h-rischio">
+    <section aria-labelledby="h-rischio" class="solo-pc" hidden>
       <h2 id="h-rischio">Rischio incendi per settore AIB</h2>
       <div class="days" role="group" aria-label="Giorno di previsione" id="days"></div>
       <div class="legend" id="legenda"></div>
@@ -139,7 +139,7 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
     <section aria-labelledby="h-livelli">
       <h2 id="h-livelli">Livelli</h2>
       <div class="layers">
-        <label><input type="checkbox" id="lay-settori" checked><i class="sw" style="background:linear-gradient(90deg,var(--basso),var(--medio),var(--moderato))"></i><span>Rischio del giorno per settore AIB<small>Colori del bollettino regionale di previsione incendi</small></span></label>
+        <label class="solo-pc" hidden><input type="checkbox" id="lay-settori" checked><i class="sw" style="background:linear-gradient(90deg,var(--basso),var(--medio),var(--moderato))"></i><span>Rischio del giorno per settore AIB<small>Colori del bollettino regionale di previsione incendi</small></span></label>
         <label><input type="checkbox" id="lay-parchi" checked><i class="sw" style="background:var(--parco);border:2px solid #fff"></i><span>Parchi e riserve<small>Parchi nazionali e regionali, riserve naturali</small></span></label>
         <label><input type="checkbox" id="lay-n2000" checked><i class="sw" style="background:transparent;border:2px dashed var(--n2000)"></i><span>Rete Natura 2000<small>Aree tutelate dall'Unione Europea (ZSC e ZPS)</small></span></label>
       </div>
@@ -153,7 +153,7 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
 
     <div class="tip"><b>Nelle aree protette:</b> non accendere fuochi, non gettare mozziconi, e se vedi fumo o fiamme <b>chiama subito il 112</b>.</div>
 
-    <p class="src">Settori AIB: zone omogenee del bollettino regionale, ricostruite comune per comune. Il bollettino ufficiale resta il riferimento.</p>
+    <p class="src solo-pc" hidden>Settori AIB: zone omogenee del bollettino regionale, ricostruite comune per comune. Il bollettino ufficiale resta il riferimento.</p>
     <p class="src">Fonte aree protette: Regione Puglia, open data «Parchi, aree naturali protette, siti di importanza rilevante» (revisione novembre 2022), licenza IODL 2.0. Escluse le aree solo marine (riserve marine, praterie di posidonia). Confini semplificati per la visualizzazione: per usi ufficiali fanno fede i dati originali.</p>
   </aside>
 </div>
@@ -163,6 +163,15 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (() => {
+  // L'incrocio aree protette × rischio del giorno è riservato all'area Protezione Civile:
+  // ai cittadini mostriamo solo le aree protette, senza indicare dove oggi il rischio è più alto.
+  let OPERATORE = false;
+  try { OPERATORE = !!sessionStorage.getItem("flair_pc_session"); } catch (e) {}
+  if (OPERATORE) {
+    document.querySelectorAll(".solo-pc").forEach(el => el.hidden = false);
+    document.title = "Aree protette e rischio · FLAIR";
+    document.querySelector("aside h1").textContent = "Aree protette e rischio";
+  }
   const FILES = { parchi: "data/aree_protette_parchi.geojson", n2000: "data/aree_protette_natura2000.geojson" };
   const FILE_SETTORI = "data/settori_aib.geojson", FILE_BOLL = "data/bollettino_incendi.json";
   const COL = { parchi: "#14532d", n2000: "#3fb5c9" };
@@ -339,11 +348,11 @@ footer{flex:none;height:40px;display:flex;align-items:center;justify-content:cen
   }
 
   // ---- caricamento ----
-  Promise.all([fetch(FILE_SETTORI).then(r => r.ok ? r.json() : null).catch(() => null), fetch(FILE_BOLL, { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null)])
+  (OPERATORE ? Promise.all([fetch(FILE_SETTORI).then(r => r.ok ? r.json() : null).catch(() => null), fetch(FILE_BOLL, { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null)])
     .then(([gj, b]) => {
       if (gj && b) { boll = b; preparaBollettino(gj); }
       else { $("boll-src").textContent = "Bollettino non disponibile."; $("lay-settori").disabled = true; }
-    })
+    }) : Promise.resolve())
     .then(() => Promise.all(Object.entries(FILES).map(([g, f]) => fetch(f).then(r => r.ok ? r.json() : null).then(gj => [g, gj]).catch(() => [g, null])))
     .then(res => {
       res.sort((a, b) => a[0] === "n2000" ? -1 : 1).forEach(([g, gj]) => { if (gj) crea(g, gj); });   // Natura 2000 sotto, parchi sopra

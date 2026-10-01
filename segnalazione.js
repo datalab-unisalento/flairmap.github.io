@@ -509,7 +509,7 @@
   }
   const km = d => d === 0 ? "ci sei dentro" : d < 1 ? "a meno di 1 km" : `a ${d.toFixed(1).replace(".", ",")} km`;
   async function rispondiAree(pos) {
-    await Promise.all([caricaAree(), caricaBoll()]);
+    await caricaAree();
     if (!aree.length) { await say("Non riesco a caricare le aree protette in questo momento."); return; }
     const vicine = aree.map(a => ({ ...a, d: distanzaKm(pos.lat, pos.lon, a.geom) }))
       .filter(a => a.d <= 15).sort((x, y) => x.d - y.d);
@@ -518,8 +518,8 @@
     if (!elenco.length) box.appendChild(document.createTextNode("Non ci sono aree protette entro 15 km da te."));
     else {
       box.appendChild(document.createTextNode("Le aree protette più vicine a te:\n" +
-        elenco.map(a => { const lv = (a.settori || []).map(z => rischio(z)).filter(Boolean).map(x => x.livello).sort((x, y) => ORDINE_LIV.indexOf(y) - ORDINE_LIV.indexOf(x))[0];
-          return `• ${a.nome} — ${a.n2000 ? "Natura 2000" : a.tipo}, ${km(a.d)}${lv ? ` · rischio ${lv}` : ""}`; }).join("\n") +
+        // volutamente senza il livello di rischio per area: l'incrocio aree × rischio resta all'area Protezione Civile
+        elenco.map(a => `• ${a.nome} — ${a.n2000 ? "Natura 2000" : a.tipo}, ${km(a.d)}`).join("\n") +
         "\n\nSono i luoghi di maggior valore naturale: niente fuochi, e se vedi fumo chiama subito il 112.\n"));
     }
     const a = document.createElement("a");
