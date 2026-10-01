@@ -198,7 +198,7 @@
     document.body.appendChild(ov);
   }
 
-  function apriMappa() {
+  function apriMappa(centro) {
     return new Promise(async resolve => {
       if (!ov) costruisciDialogo();
       ov.hidden = false;
@@ -240,6 +240,7 @@
             { enableHighAccuracy: true, timeout: 10000 });
         };
       }
+      if (centro) mappa.setView([centro.lat, centro.lon], 17);
       setTimeout(() => { mappa.invalidateSize(); aggiorna(); }, 60);
 
       function aggiorna() {
@@ -277,7 +278,7 @@
   let attesaTesto = null;          // funzione che riceve il prossimo testo scritto (nota)
   let inCorso = false;
 
-  async function avvia(testoUtente) {
+  async function avvia(testoUtente, posIniziale) {
     if (inCorso) return;
     inCorso = true;
     try {
@@ -301,10 +302,12 @@
 
       let luogo = null;
       while (!luogo) {
-        await say("Dove si trova? Apri la mappa, sposta il segnaposto sul punto esatto e conferma.");
+        await say(posIniziale
+          ? "Dove si trova? Apro la mappa sulla tua posizione: sposta il segnaposto sul punto esatto e conferma."
+          : "Dove si trova? Apri la mappa, sposta il segnaposto sul punto esatto e conferma.");
         const r = await choose([{ value: "mappa", label: "Apri la mappa", primary: true }, { value: "annulla", label: "Annulla segnalazione" }]);
         if (r.value === "annulla") { bubble(r.label, "me"); await say("Va bene, segnalazione annullata."); return; }
-        luogo = await apriMappa();
+        luogo = await apriMappa(posIniziale);
         if (!luogo) await say("Non hai scelto un punto.");
       }
       bubble(`📍 ${luogo.comune ? `${luogo.comune} (${luogo.provincia})` : "Punto sulla mappa"}\n${luogo.lat.toFixed(5)}, ${luogo.lon.toFixed(5)}`, "me");
@@ -391,5 +394,55 @@
   const segnalaBtn = document.getElementById("btn-segnala");
   if (segnalaBtn) segnalaBtn.addEventListener("click", () => avvia("Voglio segnalare una situazione a rischio"));
 
-  window.FLAIR_SEGNALAZIONE = { avvia };
+  // ---------------------------------------------------------------- "Usa la mia posizione"
+  // Rileva la posizione, riconosce comune e settore AIB e propone le azioni utili lì.
+  // La posizione non viene salvata né inviata: al chatbot arriva solo il nome del comune.
+  function chiedi(testo) {
+    input.value = testo;
+    form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+  }
+  function leggiPosizione() {
+    return new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }));
+  }
+  let cercando = false;
+  async function usaPosizione() {
+    if (cercando) return;
+    if (inCorso) { say("Completa prima la segnalazione in corso, usando i pulsanti qui sopra."); return; }
+    bubble("📍 Usa la mia posizione", "me");
+    if (!navigator.geolocation) { await say("Il tuo browser non permette di leggere la posizione. Scrivi il nome del tuo comune."); return; }
+    cercando = true;
+    const btn = document.getElementById("btn-posizione");
+    if (btn) { btn.disabled = true; btn.setAttribute("aria-busy", "true"); }
+    const attesa = await say("Cerco la tua posizione…");
+    try {
+      const [p] = await Promise.all([leggiPosizione(), carica()]);
+      const pos = { lat: p.coords.latitude, lon: p.coords.longitude };
+      const info = trovaComune(pos.lat, pos.lon);
+      attesa.remove();
+      if (!comuni) { await say("Non riesco a caricare i confini dei comuni. Scrivi il nome del tuo comune."); return; }
+      if (!info) { await say("Sembri fuori dalla Puglia: FLAIR per ora copre solo il territorio pugliese."); return; }
+      const appross = p.coords.accuracy > 1000 ? ` (posizione approssimativa, circa ${Math.round(p.coords.accuracy / 1000)} km)` : "";
+      await say(`Ti trovo a ${info.comune} (${info.provincia})${info.settore ? ` · settore AIB ${info.settore}` : ""}${appross}.\nCosa vuoi fare?`);
+      const scelta = await choose([
+        { value: "rischio", label: `Rischio incendi oggi a ${info.comune}`, primary: true },
+        { value: "vicini", label: "Ci sono incendi vicino a me?" },
+        { value: "segnala", label: "Segnala qui erba alta o sterpaglie" },
+      ]);
+      if (scelta.value === "rischio") chiedi(`Qual è il rischio incendi oggi a ${info.comune}?`);
+      else if (scelta.value === "vicini") chiedi(`Ci sono incendi in corso vicino a ${info.comune}?`);
+      else avvia(scelta.label, pos);
+    } catch (err) {
+      attesa.remove();
+      if (err && err.code === 1) await say("Non ho il permesso di leggere la posizione. Puoi attivarlo dalle impostazioni del browser, oppure scrivere il nome del tuo comune.");
+      else await say("Non riesco a rilevare la posizione in questo momento. Riprova tra poco, oppure scrivi il nome del tuo comune.");
+    } finally {
+      cercando = false;
+      if (btn) { btn.disabled = false; btn.removeAttribute("aria-busy"); }
+    }
+  }
+  const posBtn = document.getElementById("btn-posizione");
+  if (posBtn) posBtn.addEventListener("click", usaPosizione);
+
+  window.FLAIR_SEGNALAZIONE = { avvia, usaPosizione };
 })();
