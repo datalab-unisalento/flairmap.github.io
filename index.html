@@ -6,13 +6,23 @@
 <title>FLAIR</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
 body{margin:0;font-family:'IBM Plex Sans',system-ui,sans-serif;background:#1a262c;color:#e8eef0}
 a{color:#f0a36b}a:hover{color:#f6c29a}
-nav a:hover{border-color:#e8834a!important;color:#e8eef0!important}
+nav a:not(.cta):hover{border-color:#e8834a!important;color:#e8eef0!important}
 nav a:focus-visible,button:focus-visible{outline:2px solid #f0a36b;outline-offset:2px}
 textarea::placeholder{color:#8b9ca3}
+.pc-login:hover{border-color:#e8834a!important;color:#e8eef0!important}
+.pc-login:focus-visible{outline:2px solid #f0a36b;outline-offset:2px}
+header nav a{white-space:nowrap;flex:none}
+@media (max-width:1360px){
+  header{flex-wrap:wrap;height:auto!important;row-gap:12px;padding:12px 16px!important}
+  header nav{order:3;width:100%;overflow-x:auto;padding-bottom:2px}
+  header nav a{flex:none;white-space:nowrap}
+  #main{padding:24px 16px 48px!important}
+  #hero h1{font-size:32px!important;text-align:center}
+}
 </style>
 
 </head>
@@ -20,48 +30,53 @@ textarea::placeholder{color:#8b9ca3}
 <div style="min-height: 100vh; box-sizing: border-box; background: #1a262c; display: flex; flex-direction: column; font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #e8eef0">
 
 <header style="height: 72px; box-sizing: border-box; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a3a42">
-<div style="display: flex; align-items: center; gap: 10px">
-<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e8834a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.6 1.2 2.6 2.5 3 0-3 0-5.5 0-8z"></path></svg>
-<span style="font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 500; letter-spacing: -0.01em">FLAIR</span>
-</div>
+<a href="index.html" aria-label="FLAIR, torna alla home" style="display: flex; align-items: center; gap: 10px; text-decoration: none">
+<img src="assets/logo_ulivo.png" alt="" width="31" height="44" style="display: block; width: auto; height: 44px">
+<span style="font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: 0.04em; color: #ffffff">FL<span style="color: #e8834a">AI</span>R</span>
+</a>
 
 <nav aria-label="Azioni principali" style="display: flex; align-items: center; gap: 12px">
-<button type="button" style="height: 44px; padding: 0 20px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #e8834a; background: #e8834a; color: #1a262c; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4"></path><path d="M12 17h.01"></path><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
-Segnala un incendio
-</button>
+<a class="cta" href="incendi-attivi.html" style="height: 44px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #e8834a; background: #e8834a; color: #1a262c; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.6 1.2 2.6 2.5 3 0-3 0-5.5 0-8z"></path></svg>
+Visualizza incendi attivi
+</a>
 <a href="storico.html" style="height: 44px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #36474f; background: #213039; color: #e8eef0; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"></path><path d="M9 4v14"></path><path d="M15 6v14"></path></svg>
 Mappa storica
 </a>
-<a href="focolai.html" style="height: 44px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #36474f; background: #213039; color: #e8eef0; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"></path><path d="M12 10v7"></path></svg>
-Anomalie termiche
+<a href="rischio-oggi.html" style="height: 44px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #36474f; background: #213039; color: #e8eef0; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 18a8 8 0 1 1 16 0"></path><path d="M12 18l4-6"></path><circle cx="12" cy="18" r="1.2"></circle></svg>
+Rischio di oggi
+</a>
+<a href="prevenzione.html" style="height: 44px; box-sizing: border-box; padding: 0 20px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #36474f; background: #213039; color: #e8eef0; font-family: inherit; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6L12 3z"></path><path d="M12 8v5"></path><circle cx="12" cy="16" r="0.6"></circle></svg>
+Prevenzione
 </a>
 </nav>
 
-<button type="button" aria-label="Menu account" style="width: 44px; height: 44px; border-radius: 999px; border: 1px solid #36474f; background: #213039; color: #e8eef0; display: flex; align-items: center; justify-content: center; cursor: pointer">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>
-</button>
+<a class="pc-login" href="login.html" style="height: 44px; box-sizing: border-box; padding: 0 18px 0 14px; display: flex; align-items: center; gap: 8px; border-radius: 999px; border: 1px solid #36474f; background: transparent; color: #e8eef0; font-size: 14px; font-weight: 500; text-decoration: none; white-space: nowrap">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6L12 3z"></path><path d="m9 12 2 2 4-4"></path></svg>
+Accedi come Protezione Civile
+</a>
 </header>
 
 <main id="main" style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px; padding: 0 32px 72px">
 <div id="hero" style="display: flex; flex-direction: column; align-items: center; gap: 12px">
 <h1 style="margin: 0; font-family: 'Fraunces', Georgia, serif; font-size: 44px; font-weight: 400; letter-spacing: -0.02em; color: #e8eef0">Come posso aiutarti oggi?</h1>
-<p style="margin: 0; font-size: 16px; color: #a3b2b8">Chiedi informazioni su incendi, aree a rischio e dati termici del territorio.</p>
+<p style="margin: 0; font-size: 16px; color: #a3b2b8; text-align: center">Chiedi del rischio incendi nella tua zona, degli incendi in corso e di come proteggere i boschi vicino a te.</p>
 </div>
 
 <div id="chat-log" aria-live="polite" style="display:none;width:100%;max-width:760px;flex-direction:column;gap:14px;overflow-y:auto;max-height:60vh;padding-top:24px"></div>
 
 <form id="chat-form" style="width: 100%; max-width: 760px; box-sizing: border-box; background: #22323b; border: 1px solid #36474f; border-radius: 20px; padding: 18px 18px 14px 22px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 40px rgba(5,15,20,0.45)">
 <label for="prompt" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Scrivi un messaggio</label>
-<textarea id="prompt" rows="3" placeholder="Scrivi un messaggio…" style="width: 100%; box-sizing: border-box; resize: none; border: none; outline: none; background: transparent; color: #e8eef0; font-family: inherit; font-size: 17px; line-height: 1.5; padding: 0"></textarea>
+<textarea id="prompt" rows="3" placeholder="Es. Qual è il rischio incendi oggi a Cavallino?" style="width: 100%; box-sizing: border-box; resize: none; border: none; outline: none; background: transparent; color: #e8eef0; font-family: inherit; font-size: 17px; line-height: 1.5; padding: 0"></textarea>
 <div style="display: flex; align-items: center; justify-content: space-between">
 <div style="display: flex; align-items: center; gap: 8px">
 <button type="button" aria-label="Allega file o foto" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #36474f; background: transparent; color: #c4d0d4; display: flex; align-items: center; justify-content: center; cursor: pointer">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
 </button>
-<button type="button" aria-label="Usa la mia posizione" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #36474f; background: transparent; color: #c4d0d4; display: flex; align-items: center; justify-content: center; cursor: pointer">
+<button type="button" id="btn-posizione" aria-label="Usa la mia posizione" title="Usa la mia posizione" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #36474f; background: transparent; color: #c4d0d4; display: flex; align-items: center; justify-content: center; cursor: pointer">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
 </button>
 </div>
@@ -72,14 +87,16 @@ Anomalie termiche
 </form>
 
 <div id="suggestions" style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; max-width: 760px">
-<button type="button" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; cursor: pointer">Cosa fare in caso di incendio vicino a casa</button>
-<button type="button" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; cursor: pointer">Incendi passati nella mia zona</button>
-<button type="button" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; cursor: pointer">Come leggere un'anomalia termica</button>
+<button type="button" style="min-height: 44px; padding: 10px 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; line-height: 1.3; cursor: pointer">Ci sono incendi vicino a me in questo momento?</button>
+<button type="button" style="min-height: 44px; padding: 10px 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; line-height: 1.3; cursor: pointer">Qual è il rischio incendi oggi nel mio comune?</button>
+<button type="button" style="min-height: 44px; padding: 10px 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; line-height: 1.3; cursor: pointer">Posso bruciare sterpaglie o stoppie oggi?</button>
+<button type="button" style="min-height: 44px; padding: 10px 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; line-height: 1.3; cursor: pointer">Vedo fumo o fiamme: cosa devo fare?</button>
+<button type="button" data-segnala style="min-height: 44px; padding: 10px 16px; border-radius: 12px; border: 1px solid #2f4048; background: transparent; color: #c4d0d4; font-family: inherit; font-size: 14px; line-height: 1.3; cursor: pointer">Segnala erba alta o sterpaglie vicino a un bosco</button>
 </div>
 </main>
 
 <footer style="height: 48px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #8b9ca3">In caso di emergenza chiama subito il 112.</footer>
 </div>
-<script src="chatbot/chat.js"></script>
+<script src="segnalazione.js"></script>
 </body>
 </html>

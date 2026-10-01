@@ -1,0 +1,9 @@
+id,data_ora,lat,lon,comune,provincia,settore_aib,codice_colore,note
+SIM-002,2026-09-30T14:05:00+02:00,41.852000,16.048000,Vico del Gargano,FG,FG_01,ROSSO,"Fronte di fiamma esteso in area boscata, colonna di fumo visibile a chilometri. Case sparse a poche centinaia di metri."
+SIM-003,2026-09-30T15:20:00+02:00,41.642000,15.625000,Rignano Garganico,FG,FG_02,GIALLO,"Incendio di sterpaglie e pascolo lungo il versante, fronte limitato. Nessuna struttura vicina."
+SIM-004,2026-09-30T16:10:00+02:00,40.838000,16.463000,Altamura,BA,BA_03,ARANCIONE,"Fiamme su pascolo arido e macchia in espansione, vento sostenuto. Strada provinciale vicina con fumo sulla carreggiata."
+SIM-005,2026-09-30T16:45:00+02:00,40.632000,17.085000,Massafra,TA,TA_01,ARANCIONE,"Incendio in zona di macchia su terreno scosceso, difficile da raggiungere a piedi. Fumo in direzione dell'abitato."
+SIM-006,2026-09-30T17:30:00+02:00,41.021500,16.198000,Andria,BT,BAT,VERDE,"Principio d'incendio a bordo campo dopo bruciatura di residui agricoli. Fumo chiaro, fiamme basse."
+SIM-007,2026-09-30T18:15:00+02:00,40.541000,17.585000,Francavilla Fontana,BR,BR_02,VERDE,"Fumo da uliveto abbandonato, fiamme non visibili dalla strada."
+SIM-008,2026-09-30T19:40:00+02:00,40.165000,18.320000,Castrignano de' Greci,LE,LE_03,GIALLO,"Incendio di incolto vicino alla strada comunale, fronte stabile. Vento debole."
+SIM-009,2026-09-30T20:25:00+02:00,39.862000,18.335000,Morciano di Leuca,LE,LE_02,ARANCIONE,Fiamme su macchia costiera in espansione verso la pineta. Presenza di bagnanti e case vacanza in zona.
