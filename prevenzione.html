@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prevenzione incendi · FLAIR</title>
+<meta name="description" content="Buone norme, regole regionali su fasce di protezione e bruciature, e significato dei codici colore degli incendi secondo il piano regionale AIB della Puglia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1a262c; --panel:#213039; --panel2:#22323b; --line:#36474f; --line2:#2a3a42;
+  --ink:#e8eef0; --muted:#a3b2b8; --faint:#8b9ca3; --accent:#e8834a; --link:#f0a36b;
+  --basso:#2fbf4a; --medio:#ffe11a; --moderato:#ffab00; --elevato:#f02a1d; --estremo:#ff3df0;
+  --c-bianco:#f4f6f6; --c-verde:#2fbf4a; --c-giallo:#ffe11a; --c-arancione:#ff8a1f; --c-rosso:#e8231a;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'IBM Plex Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+
+header{height:72px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line2);position:sticky;top:0;background:var(--bg);z-index:5}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{display:block;width:auto;height:44px}
+.brand span{font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;letter-spacing:.04em;color:#fff}
+.brand span b{color:var(--accent);font-weight:600}
+.back{height:40px;padding:0 16px;display:flex;align-items:center;gap:8px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);text-decoration:none;font-size:14px;font-weight:500}
+.back:hover{border-color:var(--accent)}
+
+main{max-width:960px;margin:0 auto;padding:40px 24px 56px;display:flex;flex-direction:column;gap:56px}
+h1{margin:0;font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:40px;letter-spacing:-.02em;line-height:1.15}
+h2{margin:0 0 6px;font-family:'Fraunces',Georgia,serif;font-weight:400;font-size:28px;letter-spacing:-.01em}
+h3{margin:0;font-size:16px;font-weight:600}
+.kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:0 0 8px}
+.lead{margin:12px 0 0;color:var(--muted);font-size:17px;max-width:720px}
+.sub{margin:0 0 20px;color:var(--muted);font-size:15px;max-width:720px}
+.toc{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.toc a{height:40px;padding:0 16px;display:flex;align-items:center;border-radius:999px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:14px}
+.toc a:hover{border-color:var(--accent)}
+
+.sos{display:flex;align-items:center;gap:18px;background:#3a1f1a;border:1px solid #7a3a2a;border-radius:16px;padding:18px 20px}
+.sos .n{font-family:'Fraunces',Georgia,serif;font-size:44px;font-weight:600;color:#fff;line-height:1}
+.sos p{margin:0;font-size:15px;color:#f3d9cf}
+.sos p b{color:#fff}
+.sos a.call{margin-left:auto;flex:none;height:44px;padding:0 20px;border-radius:999px;background:var(--accent);color:#1a262c;font-weight:600;text-decoration:none;display:flex;align-items:center}
+
+/* due colori */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px}
+.card p{margin:0;font-size:14.5px;color:#c9d4d8}
+.card .q{font-size:13px;color:var(--faint)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-block;font-weight:700;font-size:11.5px;letter-spacing:.05em;padding:3px 9px;border-radius:6px;color:#1a262c}
+.card a.more{font-size:14px;font-weight:500;margin-top:auto}
+
+/* codici */
+.codes{display:flex;flex-direction:column;gap:12px}
+.code{display:grid;grid-template-columns:150px 1fr 1fr;gap:20px;background:var(--panel2);border:1px solid var(--line);border-left-width:8px;border-radius:14px;padding:18px 20px}
+.code .name{font-weight:700;letter-spacing:.06em;font-size:15px;display:flex;flex-direction:column;gap:6px}
+.code .name small{font-weight:400;letter-spacing:0;color:var(--muted);font-size:13px}
+.code h4{margin:0 0 4px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+.code p{margin:0;font-size:14px;color:#c9d4d8}
+.code .you p{color:var(--ink)}
+
+/* buone norme */
+.rules{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.rule{display:flex;gap:14px;background:var(--panel2);border:1px solid var(--line2);border-radius:14px;padding:16px 18px}
+.rule .ic{flex:none;width:40px;height:40px;border-radius:10px;background:#2c3f48;display:flex;align-items:center;justify-content:center;color:var(--link)}
+.rule p{margin:4px 0 0;font-size:14px;color:#c9d4d8}
+
+/* norme */
+.status{border-radius:14px;padding:16px 18px;font-size:15px;margin-bottom:16px;border:1px solid}
+.status.on{background:#3a1f1a;border-color:#7a3a2a;color:#f8e1d8}
+.status.off{background:#1f3328;border-color:#2f5a40;color:#d7efe0}
+.status b{color:#fff}
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line2);vertical-align:top}
+th{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);background:#1e2c34}
+tr:last-child td{border-bottom:0}
+td.w{white-space:nowrap;font-weight:600}
+.law{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.note{font-size:13px;color:var(--faint);margin:14px 0 0}
+
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.btn{height:44px;padding:0 18px;border-radius:999px;display:flex;align-items:center;gap:8px;text-decoration:none;font-size:14.5px;font-weight:500;border:1px solid var(--line);color:var(--ink);background:var(--panel)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1a262c;font-weight:600}
+.btn:hover{border-color:var(--accent)}
+
+.sources{font-size:13px;color:var(--faint);border-top:1px solid var(--line2);padding-top:20px}
+.sources ul{margin:8px 0 0;padding-left:18px}
+.sources li{margin:4px 0}
+footer{height:48px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--faint);border-top:1px solid var(--line2)}
+
+@media (max-width:760px){
+  header{padding:0 16px}
+  .back .lbl{display:none}
+  main{padding:28px 16px 40px;gap:44px}
+  h1{font-size:30px}
+  .two,.rules,.law{grid-template-columns:1fr}
+  .code{grid-template-columns:1fr;gap:10px}
+  .sos{flex-wrap:wrap}
+  .sos a.call{margin-left:0}
+  table{display:block;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html" aria-label="FLAIR, torna alla home">
+    <img src="assets/logo_ulivo.png" alt="" width="31" height="44">
+    <span>FL<b>AI</b>R</span>
+  </a>
+  <a class="back" href="index.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"></path><path d="m12 19-7-7 7-7"></path></svg>
+    <span class="lbl">Torna alla home</span>
+  </a>
+</header>
+
+<main>
+  <section>
+    <p class="kicker">Prevenzione</p>
+    <h1>Il bosco si protegge prima che bruci</h1>
+    <p class="lead">Quasi tutti gli incendi boschivi partono da un gesto umano: una bruciatura sfuggita di mano, un mozzicone, un terreno lasciato incolto. Qui trovi cosa puoi fare tu, cosa dice la legge in Puglia e cosa significano i colori che senti nei comunicati.</p>
+    <nav class="toc" aria-label="In questa pagina">
+      <a href="#colori">Due colori diversi</a>
+      <a href="#codici">I codici dell'incendio</a>
+      <a href="#norme">Buone norme</a>
+      <a href="#regole">Le regole in Puglia</a>
+    </nav>
+  </section>
+
+  <div class="sos" role="note">
+    <span class="n">112</span>
+    <p><b>Vedi fumo o fiamme? Chiama subito il 112.</b> Di' dove sei con un riferimento chiaro (strada, località, chilometro), cosa vedi e se ci sono case o persone vicine. Non avvicinarti al fuoco.</p>
+    <a class="call" href="tel:112">Chiama il 112</a>
+  </div>
+
+  <!-- 1. Due colori -->
+  <section id="colori" aria-labelledby="h-colori">
+    <p class="kicker">Per non confondersi</p>
+    <h2 id="h-colori">Due colori, due cose diverse</h2>
+    <p class="sub">In Puglia si parla di "colori" in due casi che non vanno confusi: uno serve a <b>prevenire</b>, l'altro descrive un incendio <b>già in corso</b>.</p>
+    <div class="two">
+      <div class="card">
+        <span class="q">Prima: quanto è probabile che un incendio parta oggi?</span>
+        <h3>Il rischio del giorno</h3>
+        <div class="chips">
+          <span class="chip" style="background:var(--basso)">BASSO</span>
+          <span class="chip" style="background:var(--medio)">MEDIO</span>
+          <span class="chip" style="background:var(--moderato)">MODERATO</span>
+          <span class="chip" style="background:var(--elevato);color:#fff">ELEVATO</span>
+          <span class="chip" style="background:var(--estremo)">ESTREMO</span>
+        </div>
+        <p>Lo pubblica ogni giorno la Protezione Civile Puglia nel bollettino di previsione incendi, zona per zona. Dipende da caldo, vento e vegetazione secca. Ti dice quanto devi stare attento <b>oggi</b>.</p>
+        <a class="more" href="rischio-oggi.html">Guarda il rischio di oggi →</a>
+      </div>
+      <div class="card">
+        <span class="q">Durante: quanto è grave un incendio già scoppiato?</span>
+        <h3>Il codice dell'incendio</h3>
+        <div class="chips">
+          <span class="chip" style="background:var(--c-bianco)">BIANCO</span>
+          <span class="chip" style="background:var(--c-verde)">VERDE</span>
+          <span class="chip" style="background:var(--c-giallo)">GIALLO</span>
+          <span class="chip" style="background:var(--c-arancione)">ARANCIONE</span>
+          <span class="chip" style="background:var(--c-rosso);color:#fff">ROSSO</span>
+        </div>
+        <p>Lo assegnano i soccorritori a un singolo incendio, dopo averlo verificato, secondo il piano regionale antincendio boschivo (AIB). Indica quanto è esteso e pericoloso e <b>quante forze servono</b> per spegnerlo.</p>
+        <a class="more" href="#codici">Cosa significa ogni codice ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Codici -->
+  <section id="codici" aria-labelledby="h-codici">
+    <p class="kicker">Piano regionale AIB</p>
+    <h2 id="h-codici">I codici colore di un incendio</h2>
+    <p class="sub">Spiegati in parole semplici dalla tabella dei codici del piano regionale antincendio boschivo della Puglia, con cosa conviene fare se ti trovi in zona. Il codice lo decide chi interviene, non chi segnala: a te basta chiamare il 112.</p>
+
+    <div class="codes">
+      <article class="code" style="border-left-color:var(--c-bianco)">
+        <div class="name">BIANCO<small>Falso allarme</small></div>
+        <div><h4>Cosa succede</h4><p>Dopo il controllo sul posto non c'è nessun incendio, oppure il fumo viene da una zona già spenta e bonificata. L'intervento si chiude.</p></div>
+        <div class="you"><h4>Cosa fai tu</h4><p>Niente di particolare. Hai fatto bene a chiamare: nel dubbio, una segnalazione in più è sempre meglio di una in meno.</p></div>
+      </article>
+      <article class="code" style="border-left-color:var(--c-verde)">
+        <div class="name">VERDE<small>Incendio limitato</small></div>
+        <div><h4>Cosa succede</h4><p>Fuoco piccolo e ben delimitato, su erba o arbusti radi, o un cumulo di residui sotto controllo. Non tende ad allargarsi verso boschi o case e il fumo non è pericoloso. Lo gestiscono i Vigili del Fuoco, con l'aiuto delle squadre AIB se serve.</p></div>
+        <div class="you"><h4>Cosa fai tu</h4><p>Stai a distanza e non fermarti a guardare o a fare foto. Lascia libera la strada ai mezzi di soccorso.</p></div>
+      </article>
+      <article class="code" style="border-left-color:var(--c-giallo)">
+        <div class="name">GIALLO<small>Tende ad allargarsi</small></div>
+        <div><h4>Cosa succede</h4><p>Come il verde, ma il fuoco si sta estendendo, anche per il vento: più fronti, si avvicina a boschi o case, oppure è in un punto dove i mezzi da terra non arrivano. Arrivano più squadre e un responsabile coordina le operazioni sul posto.</p></div>
+        <div class="you"><h4>Cosa fai tu</h4><p>Allontanati dalla direzione in cui va il fumo. Non percorrere le strade della zona se non è necessario.</p></div>
+      </article>
+      <article class="code" style="border-left-color:var(--c-arancione)">
+        <div class="name">ARANCIONE<small>Grave</small></div>
+        <div><h4>Cosa succede</h4><p>Incendio molto esteso e difficile da fermare da terra, oppure che tocca boschi, pascoli o zone vicine alle case. Il fumo può mettere in pericolo centri abitati o strade. Intervengono più forze coordinate (Vigili del Fuoco, Carabinieri forestali, squadre regionali, volontari); la sala operativa regionale avvisa il Comune e può scattare la preallerta per un'evacuazione.</p></div>
+        <div class="you"><h4>Cosa fai tu</h4><p>Segui le indicazioni del Comune e dei soccorritori. Chiudi porte e finestre se arriva fumo e tieni pronti documenti, medicine e telefono carico nel caso ti chiedano di allontanarti.</p></div>
+      </article>
+      <article class="code" style="border-left-color:var(--c-rosso)">
+        <div class="name">ROSSO<small>Emergenza</small></div>
+        <div><h4>Cosa succede</h4><p>Il fuoco si espande in modo estremo: servono anche i mezzi aerei e possono essere necessarie evacuazioni. Possono interrompersi strade, elettricità o altri servizi, e ci sono rischi per persone e beni. Si mobilitano tutte le forze disponibili, la Prefettura e la colonna mobile regionale; vengono informati il Presidente della Regione, il Dipartimento nazionale della Protezione Civile e il Governo.</p></div>
+        <div class="you"><h4>Cosa fai tu</h4><p>Se ti dicono di evacuare, vai via subito per la strada indicata e non tornare indietro a prendere oggetti. Usa il 112 solo per emergenze reali, per non intasare le linee.</p></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 3. Buone norme -->
+  <section id="norme" aria-labelledby="h-norme">
+    <p class="kicker">Cosa puoi fare tu</p>
+    <h2 id="h-norme">Buone norme</h2>
+    <p class="sub">Piccoli gesti che, moltiplicati per tutti, fanno la differenza nelle estati più secche.</p>
+    <div class="rules">
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m5.6 5.6 12.8 12.8"/></svg></span>
+        <div><h3>Niente fuochi all'aperto vicino al verde</h3><p>Non accendere fuochi e non bruciare sterpaglie o residui vicino a boschi, pascoli e incolti, soprattutto con vento o quando il rischio è moderato o più alto.</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15h14v4H3z"/><path d="M17 15h4v4h-4"/><path d="M18 11c0-2 2-2 2-4"/></svg></span>
+        <div><h3>Mai mozziconi accesi</h3><p>Non gettare sigarette o fiammiferi, né dall'auto né a piedi. Un mozzicone sull'erba secca a bordo strada basta a far partire un incendio.</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-2-6H7z"/><circle cx="8" cy="18" r="1.5"/><circle cx="16" cy="18" r="1.5"/><path d="M4 21c2-1 4-1 6 0s4 1 6 0 4-1 6 0"/></svg></span>
+        <div><h3>Non parcheggiare sull'erba secca</h3><p>La marmitta calda può incendiare la vegetazione sotto l'auto. Lascia anche libere strade e accessi ai boschi per i mezzi di soccorso.</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16"/><path d="M6 20V10l6-5 6 5v10"/><path d="M2 14h3M19 14h3"/></svg></span>
+        <div><h3>Tieni pulito intorno a casa</h3><p>Taglia erba alta e sterpaglie intorno alle abitazioni, togli legna e materiale infiammabile vicino ai muri e pota i rami che toccano il tetto.</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V11h4v10M10 21V7h4v14M15 21v-6h4v6"/></svg></span>
+        <div><h3>Barbecue solo nelle aree attrezzate</h3><p>Nei boschi e nei parchi usa solo le aree con bracieri predisposti, quando sono aperte, e spegni bene le braci con acqua prima di andare via.</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg></span>
+        <div><h3>Segnala i terreni a rischio</h3><p>Erba alta, sterpaglie o rifiuti vegetali vicino a un bosco sono benzina per l'estate. Puoi segnalarli dalla chat di FLAIR (simulazione).</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2.5-5 .3 1.6 1.2 2.6 2.5 3 0-3 0-5.5 0-8z"/></svg></span>
+        <div><h3>Se il fuoco è vicino</h3><p>Allontanati in direzione opposta al vento e al fumo, verso zone già bruciate o senza vegetazione. Non rifugiarti in salita né in auto dentro il bosco.</p></div></div>
+      <div class="rule"><span class="ic" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18a8 8 0 1 1 16 0"/><path d="M12 18l4-6"/><circle cx="12" cy="18" r="1.2"/></svg></span>
+        <div><h3>Controlla il rischio prima di uscire</h3><p>Prima di lavori in campagna o di un'escursione guarda il rischio di oggi per la tua zona.</p></div></div>
+    </div>
+    <div class="cta-row">
+      <a class="btn primary" href="index.html?segnala=1">Segnala erba alta o sterpaglie</a>
+      <a class="btn" href="rischio-oggi.html">Rischio di oggi</a>
+    </div>
+  </section>
+
+  <!-- 4. Regole -->
+  <section id="regole" aria-labelledby="h-regole">
+    <p class="kicker">Legge regionale n. 38/2016</p>
+    <h2 id="h-regole">Le regole in Puglia</h2>
+    <p class="sub">Una sintesi degli obblighi per chi possiede o coltiva un terreno e dei divieti di bruciatura. Vale il testo della legge: il tuo Comune può avere ordinanze più severe.</p>
+
+    <div class="status" id="stato" role="status"></div>
+
+    <h3 style="margin:22px 0 10px">Fasce di protezione obbligatorie</h3>
+    <table>
+      <thead><tr><th>Terreno</th><th>Fascia</th><th>Chi deve farla</th><th>Entro</th></tr></thead>
+      <tbody>
+        <tr><td>Campi di cereali e foraggi</td><td class="w">15 metri</td><td>Chi conduce il terreno</td><td>15 luglio</td></tr>
+        <tr><td>Incolti, terreni a riposo, oliveti e altre colture arboree</td><td class="w">15 metri</td><td>Proprietari, affittuari, conduttori</td><td>31 maggio</td></tr>
+        <tr><td>Boschi</td><td class="w">5 metri</td><td>Proprietari, conduttori</td><td>—</td></tr>
+        <tr><td>Pascoli</td><td class="w">5 metri</td><td>Proprietari, affittuari, conduttori</td><td>31 maggio</td></tr>
+        <tr><td>Villaggi e strutture turistiche</td><td class="w">15 metri</td><td>Gestori, proprietari</td><td>31 maggio</td></tr>
+        <tr><td>Strade e ferrovie</td><td class="w">Idonea fascia</td><td>Enti gestori</td><td>31 maggio</td></tr>
+      </tbody>
+    </table>
+    <p class="note">La fascia di protezione è una striscia lungo il perimetro del terreno ripulita da erba secca, sterpi e residui (per esempio arata o fresata), che impedisce al fuoco di passare da un terreno all'altro.</p>
+
+    <div class="law">
+      <div class="card">
+        <h3>Bruciature di stoppie e residui vegetali</h3>
+        <p><b>Vietate dal 1° giugno al 30 settembre</b> di ogni anno (L.R. 38/2016, art. 2).</p>
+        <p>Fuori da quel periodo bruciare piccoli cumuli può essere consentito, ma con limiti di legge e del tuo Comune: informati prima, non farlo mai con vento o vicino al bosco e resta sul posto fino allo spegnimento completo.</p>
+      </div>
+      <div class="card">
+        <h3>Stato di grave pericolosità 2026</h3>
+        <p>La Regione lo ha dichiarato <b>dal 15 giugno al 15 settembre 2026</b> (Decreto del Presidente n. 299/2026), salvo proroghe. In quel periodo è vietato accendere fuochi di ogni genere, fumare o gettare mozziconi nelle aree a rischio e usare fiamme libere entro 100 metri da boschi, arbusteti e pascoli.</p>
+      </div>
+    </div>
+
+    <h3 style="margin:22px 0 10px">Sanzioni</h3>
+    <table>
+      <thead><tr><th>Violazione</th><th>Sanzione amministrativa</th></tr></thead>
+      <tbody>
+        <tr><td>Mancata realizzazione delle fasce di protezione</td><td class="w">da 500 a 2.500 €</td></tr>
+        <tr><td>Bruciatura di stoppie o residui nel periodo vietato o dove non consentita</td><td class="w">da 1.000 a 5.000 €</td></tr>
+        <tr><td>Bruciatura senza controllo e assistenza</td><td class="w">da 250 a 1.250 €</td></tr>
+        <tr><td>Violazione dei divieti durante lo stato di grave pericolosità (D.P.G.R. 299/2026)</td><td class="w">da 1.032,91 a 10.329,14 €</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Chi provoca un incendio boschivo, anche per colpa, commette un reato (art. 423-bis del codice penale) e risponde dei danni.</p>
+  </section>
+
+  <section class="sources" aria-labelledby="h-fonti">
+    <p class="kicker" id="h-fonti">Fonti</p>
+    Questa pagina è una sintesi divulgativa e non sostituisce i testi ufficiali. In caso di dubbio fanno fede le norme e le ordinanze del tuo Comune.
+    <ul>
+      <li><a href="https://www.regione.puglia.it/documents/3171874/3201884/LR38.pdf/8fe17e9d-3d1a-d725-014f-b27c42534c31?t=1655754079008" target="_blank" rel="noopener">Legge regionale Puglia 12 dicembre 2016, n. 38 – BURP n. 143 del 14/12/2016</a></li>
+      <li><a href="https://www.regione.puglia.it/documents/4988666/8349284/DEC_299_2026_260604_222633.pdf/25dcefc4-5ba1-713e-86a9-906a8f15ae5c?t=1780605029036" target="_blank" rel="noopener">Decreto del Presidente della Giunta regionale n. 299/2026 – BURP n. 43 del 1/6/2026</a></li>
+      <li>Piano regionale antincendio boschivo della Puglia – tabella dei codici colore (Bianco, Verde, Giallo, Arancione, Rosso)</li>
+      <li>Bollettino di previsione incendi – Protezione Civile Regione Puglia</li>
+    </ul>
+  </section>
+</main>
+
+<footer>In caso di emergenza chiama subito il 112.</footer>
+
+<script>
+(function () {
+  // Il divieto regionale di bruciatura vale dal 1° giugno al 30 settembre (L.R. 38/2016, art. 2).
+  const oggi = new Date();
+  const m = oggi.getMonth() + 1;                 // 1..12
+  const dentro = m >= 6 && m <= 9;
+  const data = oggi.toLocaleDateString("it-IT", { day: "numeric", month: "long" });
+  const el = document.getElementById("stato");
+  el.className = "status " + (dentro ? "on" : "off");
+  el.innerHTML = dentro
+    ? `<b>Oggi, ${data}: divieto di bruciatura in vigore.</b> Fino al 30 settembre in Puglia non si possono bruciare stoppie e residui vegetali.`
+    : `<b>Oggi, ${data}: il divieto regionale di bruciatura non è in vigore</b> (vale dal 1° giugno al 30 settembre). Prima di bruciare residui informati comunque presso il tuo Comune e controlla il rischio di oggi: con rischio moderato o più alto, o con vento, non farlo.`;
+})();
+</script>
+</body>
+</html>

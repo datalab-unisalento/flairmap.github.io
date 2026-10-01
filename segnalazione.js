@@ -41,6 +41,8 @@
   const LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
   const ZOOM_MIN_PRECISO = 14;
   const INTENTO = /segnal|sterpagl|incuri|erba alta|incolt|potatur|rifiuti vegetal|bordo strad/i;
+  // Domande su bruciature e regole: hanno la precedenza sulla segnalazione ("posso bruciare sterpaglie?")
+  const INTENTO_REGOLE = /brucia|bruciatur|abbruciam|stoppi|fasc[ae] (di )?protezion|fasc[ae] tagliafuoco|preces|codic[ei] colore|buone norme|prevenzion/i;
   const TIPI = [
     "Erba alta o sterpaglie",
     "Terreno incolto vicino a un bosco",
@@ -389,6 +391,7 @@
     if (!testo) return true;
     if (attesaTesto) { const f = attesaTesto; attesaTesto = null; log.querySelectorAll(".fr-qr button").forEach(b => b.disabled = true); bubble(testo, "me"); input.value = ""; f(testo); return true; }
     if (inCorso) { bubble(testo, "me"); input.value = ""; say("Completa prima la segnalazione in corso, usando i pulsanti qui sopra."); return true; }
+    if (INTENTO_REGOLE.test(testo) && !/^segnal/i.test(testo)) { bubble(testo, "me"); input.value = ""; rispondiRegole(testo); return true; }
     if (INTENTO.test(testo)) { input.value = ""; avvia(testo); return true; }
     if (chatVera()) return false;                // lascia la risposta al chatbot Langflow
     bubble(testo, "me"); input.value = "";
@@ -481,8 +484,38 @@
     fatto.appendChild(document.createElement("br")); fatto.appendChild(a);
   }
 
+  // ---------------------------------------------------------------- regole: bruciature, fasce, codici
+  // Risposta fissa dalla L.R. Puglia 38/2016; il dettaglio è in prevenzione.html.
+  async function rispondiRegole(testo) {
+    const m = new Date().getMonth() + 1;
+    const vietato = m >= 6 && m <= 9;
+    let t;
+    if (/codic[ei] colore/i.test(testo)) {
+      t = "I codici colore (bianco, verde, giallo, arancione, rosso) descrivono quanto è grave un incendio già in corso e li assegnano i soccorritori secondo il piano regionale AIB. " +
+          "Non vanno confusi con il rischio del giorno del bollettino (da basso a estremo), che dice quanto è probabile che un incendio parta.";
+    } else if (/fasc|preces/i.test(testo) && !/brucia|stoppi/i.test(testo)) {
+      t = "In Puglia chi possiede o coltiva un terreno deve realizzare fasce di protezione ripulite lungo il perimetro (L.R. 38/2016): " +
+          "15 metri per cereali e foraggi (entro il 15 luglio), per incolti, oliveti e colture arboree (entro il 31 maggio) e intorno alle strutture turistiche; 5 metri per boschi e pascoli. " +
+          "Se non vengono fatte la sanzione va da 500 a 2.500 €.";
+    } else if (vietato) {
+      t = "No. In Puglia bruciare stoppie e residui vegetali è vietato dal 1° giugno al 30 settembre (L.R. 38/2016, art. 2). " +
+          "La sanzione va da 1.000 a 5.000 €, e se il fuoco si propaga a un bosco è un reato. I residui si possono trinciare e lasciare sul terreno o portare al compostaggio.";
+    } else {
+      t = "Il divieto regionale di bruciatura (dal 1° giugno al 30 settembre, L.R. 38/2016) oggi non è in vigore. " +
+          "Prima di bruciare residui informati però presso il tuo Comune, che può avere ordinanze più severe, e controlla il rischio di oggi: con rischio moderato o più alto, o con vento, non farlo. " +
+          "Se bruci, fallo lontano da boschi e incolti, con piccoli cumuli, e resta sul posto finché il fuoco è completamente spento.";
+    }
+    const b = await say(t + "\n\nSe vedi fumo o fiamme chiama subito il 112.");
+    const a = document.createElement("a");
+    a.href = "prevenzione.html" + (/codic/i.test(testo) ? "#codici" : "#regole");
+    a.className = "fr-btn"; a.style.cssText = "display:inline-block;margin-top:10px;text-decoration:none";
+    a.textContent = "Leggi le regole e le buone norme";
+    b.appendChild(document.createElement("br")); b.appendChild(a);
+  }
+
   const posBtn = document.getElementById("btn-posizione");
   if (posBtn) posBtn.addEventListener("click", usaPosizione);
+  try { if (new URLSearchParams(location.search).get("segnala")) setTimeout(() => avvia("Voglio segnalare erba alta o sterpaglie"), 300); } catch (e) {}
 
   window.FLAIR_SEGNALAZIONE = { avvia, usaPosizione };
 })();
